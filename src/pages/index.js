@@ -1,9 +1,8 @@
-
-
 export default function Home() {
-  return ( 
+  return (
     <>
-      <h1>Home Page</h1>
-    </> 
-  )
+      <h1>Welcome to T-race</h1>
+      <p>This is the homepage wrapped with Header and Footer.</p>
+    </>
+  );
 }

@@ -1,13 +1,10 @@
 import "@/styles/globals.css";
-import Footer from "@/components/Footer";
+import Layout from "../components/Layout";
 
-export default function App({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-grow">
-        <Component {...pageProps} />
-      </main>
-      <Footer />
-    </div>
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
   );
 }
