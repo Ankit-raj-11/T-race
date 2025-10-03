@@ -1,9 +1,13 @@
-
+import Header from '../components/header';
 
 export default function Home() {
-  return ( 
+  return (
     <>
-      <h1>Home Page</h1>
-    </> 
-  )
+      <Header />
+      <main className="p-4">
+        <h1 className="text-2xl font-bold">Home Page</h1>
+        <p>Welcome to the project! This is the home page.</p>
+      </main>
+    </>
+  );
 }
