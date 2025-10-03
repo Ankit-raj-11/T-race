@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
+  
   return (
     <header className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 border-b border-gray-700 relative z-50">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -79,6 +80,7 @@ export default function Header() {
           </Link>
         </nav>
       </div>
+
 
       {/* Overlay */}
       {isOpen && (
