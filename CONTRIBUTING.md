@@ -1,115 +1,236 @@
-# Contributing to T-Race
+💻 Contributing to T-Race
 
-First off, thank you for considering contributing to T-Race! We're excited to have you here. Your contributions help make T-Race a better platform for everyone.
+First off — thank you for considering contributing to T-Race!
+Your ideas, code, and feedback are what make this project thrive.
+We’re thrilled to have you join our community of contributors who help make T-Race a faster, more reliable, and enjoyable typing platform for everyone.
 
-This document provides guidelines to help you through the entire contribution process.
+This document outlines how to contribute effectively and responsibly.
 
-## Code of Conduct
+📜 Code of Conduct
 
-This project and everyone participating in it is governed by the [T-Race Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior.
+T-Race follows a strict Code of Conduct
+.
+By participating, you agree to maintain a welcoming, respectful, and inclusive environment for everyone.
+If you experience or witness any unacceptable behavior, please report it immediately through the appropriate channels mentioned in the Code of Conduct.
 
-## Getting Started
+🚀 Getting Started
 
-Ready to contribute? Here's how to set up the project on your local machine.
+Here’s how you can set up T-Race on your local machine and start contributing.
 
-1.  **Fork the Repository**
+1. Fork the Repository
 
-    Click the "Fork" button at the top right of the [T-Race repository page](https://github.com/your-org/t-race) to create your own copy.
+Click the “Fork” button at the top right of the T-Race repository page
+ to create your personal copy.
 
-2.  **Clone Your Fork**
+2. Clone Your Fork
 
-    Clone your forked repository to your local machine. Replace `[your-username]` with your actual GitHub username.
+Clone your fork to your local development environment:
 
-    ```bash
-    git clone [https://github.com/](https://github.com/)[your-username]/t-race.git
-    cd t-race
-    ```
+git clone https://github.com/[your-username]/t-race.git
+cd t-race
 
-3.  **Install Dependencies**
 
-    We use `npm` to manage our project dependencies. Run the following command in the project's root directory:
+🧩 Replace [your-username] with your GitHub username.
 
-    ```bash
-    npm install
-    ```
+3. Install Dependencies
 
-4.  **Start the Development Server**
+Use npm (or yarn) to install project dependencies:
 
-    Once the dependencies are installed, you can start the local development server:
+npm install
 
-    ```bash
-    npm run dev
-    ```
+4. Start the Development Server
 
-    This will open the T-Race application in your default web browser, usually at `http://localhost:3000`. You're now ready to start making changes!
+Run the project locally:
 
-## Finding Work
+npm run dev
 
-A great way to start is by tackling an existing issue. We keep a list of open issues that need attention.
 
--   **All Issues**: You can find the full list of open issues [here](https://github.com/your-org/t-race/issues).
--   **Good First Issues**: For new contributors, we've curated a list of issues that are easier to start with. Look for issues with the [**`good first issue`**](https://github.com/your-org/t-race/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label.
+Now visit http://localhost:3000
+ in your browser — you should see T-Race running! 🎉
+You’re ready to start making improvements or new features.
 
-If you have an idea for a new feature or find a bug that isn't documented, feel free to open a new issue!
+🧭 Finding a Way to Contribute
 
-## Submission Process (Pull Request Flow)
+There are many ways to contribute to T-Race, including:
 
-Once you've made your changes, it's time to submit them for review.
+🐛 Fixing bugs
 
-1.  **Create a New Branch**
+🧩 Adding new features
 
-    Always create a new branch for your changes. This keeps your work organized and separate from the `main` branch.
+✏️ Improving documentation
 
-    ```bash
-    git checkout -b your-branch-name
-    ```
-    (e.g., `git checkout -b feat/add-user-profile` or `git checkout -b fix/login-bug`)
+🧹 Refactoring code
 
-2.  **Make Your Changes**
+🧪 Writing or improving tests
 
-    Write your code and make your changes.
+🔍 Check Existing Issues
 
-3.  **Commit Your Changes**
+You can start by exploring open issues:
 
-    Commit your changes with a descriptive message. See our [Commit Message Format](#commit-message-format) section below.
+All Issues: Open Issues
 
-    ```bash
-    git add .
-    git commit -m "feat: Implement user profile page"
-    ```
+Good First Issues: Beginner-friendly issues
 
-4.  **Push to Your Fork**
+💡 Tip: If you’re new, start with a “good first issue” to get familiar with our codebase and workflow.
 
-    Push your branch to your forked repository on GitHub.
+🧠 Suggesting a New Feature or Reporting a Bug
 
-    ```bash
-    git push origin your-branch-name
-    ```
+If something’s missing or broken, open a new issue and include:
 
-5.  **Open a Pull Request (PR)**
+A clear title and description
 
-    Go to the T-Race repository on GitHub. You should see a prompt to create a Pull Request from your recently pushed branch.
-    -   Use a clear and descriptive title.
-    -   In the PR description, reference the issue you are solving. For example, add `Closes #23` if your PR closes issue number 23. This will automatically link the PR to the issue.
-    -   Ensure that any automated tests (if implemented) are passing locally before you submit.
-    -   Be patient. A project maintainer will review your PR, provide feedback, and merge it if everything looks good.
+Steps to reproduce (if it’s a bug)
 
-## Commit Message Format
+Expected vs. actual behavior
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This helps us automate changelogs and makes the commit history easier to read.
+Screenshots or logs (if helpful)
 
-Your commit message should be structured as follows:
-**Common Types:**
+(Optional) Possible solution ideas
 
--   **feat**: A new feature.
--   **fix**: A bug fix.
--   **docs**: Documentation only changes.
--   **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc).
--   **refactor**: A code change that neither fixes a bug nor adds a feature.
--   **test**: Adding missing tests or correcting existing tests.
--   **chore**: Changes to the build process or auxiliary tools and libraries.
+🌿 Creating Your Contribution (Pull Request Workflow)
 
-**Examples:**
-feat: Add results modal after a test is completed
-fix: Correct typo in the README.md file
-docs: Update contribution guidelines for clarity
+Once you’ve chosen an issue or idea to work on, follow these steps:
+
+1. Create a New Branch
+
+Always create a new branch before starting your work:
+
+git checkout -b feat/add-user-profile
+
+
+✅ Use descriptive branch names, e.g.:
+
+feat/add-leaderboard
+
+fix/typo-in-navbar
+
+refactor/improve-timer-logic
+
+2. Make Your Changes
+
+Make your improvements — whether that’s code, docs, or UI tweaks.
+
+Follow project coding standards (linting, naming conventions, file structure).
+
+3. Run Tests (If Available)
+
+Ensure all tests pass before committing your changes:
+
+npm test
+
+
+⚠️ If you’re adding a new feature, consider writing corresponding test cases.
+
+4. Commit Your Changes
+
+Write clean and meaningful commit messages using the Conventional Commits standard.
+
+git add .
+git commit -m "feat: add leaderboard component to track typing results"
+
+
+Refer to Commit Message Guidelines
+ below.
+
+5. Push to Your Fork
+
+Push your branch to your forked repository:
+
+git push origin feat/add-user-profile
+
+6. Open a Pull Request (PR)
+
+Head over to your fork on GitHub — you’ll see a “Compare & pull request” button.
+Click it and fill out the PR form carefully:
+
+Add a clear title and description
+
+Reference related issue(s) using keywords like:
+
+Closes #23 or Fixes #14
+
+Explain what and why you changed
+
+Attach screenshots or GIFs if your changes are visual
+
+Check all tasks in the PR template before submitting
+
+🕒 PR reviews may take time — please be patient.
+A maintainer will review, suggest improvements if necessary, and merge it once ready.
+
+📝 Commit Message Guidelines
+
+We use the Conventional Commits
+ convention.
+
+Format
+<type>: <short summary>
+
+Common Types
+Type	Description
+feat	Add a new feature
+fix	Fix a bug or issue
+docs	Documentation updates only
+style	Formatting or styling (no logic change)
+refactor	Code restructuring without changing functionality
+test	Add or fix tests
+chore	Maintenance tasks like config updates, dependency changes, etc.
+Examples
+
+✅ Good Commit Messages
+
+feat: implement leaderboard component
+
+fix: resolve timer reset bug after restart
+
+docs: update setup instructions for contributors
+
+refactor: optimize typing speed calculation
+
+🚫 Bad Commit Messages
+
+update file
+
+fixed stuff
+
+changes
+
+🧩 Tip: Make each commit small, atomic, and focused on a single purpose.
+
+🧪 Code Style & Standards
+
+To maintain code consistency, follow these general rules:
+
+Use Prettier for formatting (npm run format if available)
+
+Keep code clean and readable
+
+Avoid committing large, unrelated changes
+
+Follow React & Next.js best practices
+
+Comment only when necessary — prefer self-explanatory code
+
+🧰 Additional Tips
+
+Keep your fork in sync with the main repository:
+
+git remote add upstream https://github.com/your-org/t-race.git
+git fetch upstream
+git merge upstream/main
+
+
+Always pull the latest changes before starting a new branch.
+
+Be respectful and collaborative in discussions.
+
+Celebrate your contributions — every PR counts 🎉
+
+❤️ Thank You
+
+Your contributions are what make T-Race possible.
+No contribution is too small — whether you’re fixing a typo, improving documentation, or building a new feature.
+
+We truly appreciate your time, ideas, and effort in helping the project grow.
+
+Happy coding, and welcome to the T-Race community! 🚀
