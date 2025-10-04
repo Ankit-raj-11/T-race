@@ -1,8 +1,23 @@
 
 import { ArrowRight, Zap, Trophy, Users, Target } from 'lucide-react';
 import Link from 'next/link';
+import { useSession, signIn } from 'next-auth/react';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
+  const handleGetStarted = () => {
+    if (status === 'loading') return;
+    
+    if (session) {
+      // User is authenticated, redirect to race
+      window.location.href = '/race';
+    } else {
+      // User is not authenticated, redirect to sign in
+      signIn('google', { callbackUrl: '/race' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Hero Section */}
@@ -28,11 +43,15 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/race" className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold text-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2">
+              <button 
+                onClick={handleGetStarted}
+                disabled={status === 'loading'}
+                className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold text-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Zap size={24} />
-                <span>Start Racing</span>
+                <span>{status === 'loading' ? 'Loading...' : session ? 'Start Racing' : 'Get Started'}</span>
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              </button>
               
               <Link href="/leaderboard" className="px-8 py-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold text-lg hover:border-cyan-400 hover:text-cyan-400 transition-all duration-200 flex items-center space-x-2">
                 <Trophy size={20} />
@@ -94,10 +113,14 @@ export default function Home() {
             Join thousands of users improving their typing skills every day. 
             Start your journey to becoming a typing champion!
           </p>
-          <Link href="/race" className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold text-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 space-x-2">
-            <span>Begin Your First Race</span>
+          <button 
+            onClick={handleGetStarted}
+            disabled={status === 'loading'}
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold text-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span>{status === 'loading' ? 'Loading...' : session ? 'Begin Your Race' : 'Get Started'}</span>
             <ArrowRight size={20} />
-          </Link>
+          </button>
         </div>
       </section>
     </div>

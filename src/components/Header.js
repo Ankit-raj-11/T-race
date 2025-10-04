@@ -1,9 +1,21 @@
 import React from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const { data: session, status } = useSession();
+
+    const handleGetStarted = () => {
+        if (status === 'loading') return;
+        
+        if (session) {
+            window.location.href = '/race';
+        } else {
+            signIn('google', { callbackUrl: '/race' });
+        }
+    };
 
     return (
         <header className="sticky top-0 z-50 border-b border-gray-800 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
@@ -38,9 +50,29 @@ export default function Header() {
                         >
                             Race
                         </Link>
-                        <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
-                            Get Started
-                        </button>
+                        {session ? (
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 text-gray-300">
+                                    <User size={20} />
+                                    <span className="hidden sm:inline">{session.user.name}</span>
+                                </div>
+                                <button 
+                                    onClick={() => signOut()}
+                                    className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-300"
+                                >
+                                    <LogOut size={20} />
+                                    <span className="hidden sm:inline">Sign Out</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={handleGetStarted}
+                                disabled={status === 'loading'}
+                                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {status === 'loading' ? 'Loading...' : 'Get Started'}
+                            </button>
+                        )}
                     </nav>
 
                     {/* Mobile Menu Button */}
@@ -78,9 +110,29 @@ export default function Header() {
                             >
                                 Race
                             </Link>
-                            <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full">
-                                Get Started
-                            </button>
+                            {session ? (
+                                <div className="flex flex-col gap-4 pt-4 border-t border-gray-800">
+                                    <div className="flex items-center gap-2 text-gray-300">
+                                        <User size={20} />
+                                        <span>{session.user.name}</span>
+                                    </div>
+                                    <button 
+                                        onClick={() => signOut()}
+                                        className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-300"
+                                    >
+                                        <LogOut size={20} />
+                                        <span>Sign Out</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <button 
+                                    onClick={handleGetStarted}
+                                    disabled={status === 'loading'}
+                                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {status === 'loading' ? 'Loading...' : 'Get Started'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

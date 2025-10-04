@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 export default function Race() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [sentence, setSentence] = useState('');
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Fetch random sentence on component mount
+  // Redirect to sign in if not authenticated
   useEffect(() => {
-    fetchNewSentence();
-  }, []);
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/race');
+    }
+  }, [status, router]);
+
+  // Fetch random sentence on component mount (only if authenticated)
+  useEffect(() => {
+    if (session) {
+      fetchNewSentence();
+    }
+  }, [session]);
 
   const fetchNewSentence = async () => {
     setLoading(true);
@@ -34,6 +47,20 @@ export default function Race() {
   const handleNewSentence = () => {
     fetchNewSentence();
   };
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+      </div>
+    );
+  }
+
+  // Don't render content if not authenticated
+  if (!session) {
+    return null;
+  }
 
   return (
     <div className="bg-gray-900 text-white">
