@@ -26,8 +26,6 @@ function assertEnvConfig(cfg) {
     }
   }
 }
-
-
 assertEnvConfig(firebaseConfig);
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
