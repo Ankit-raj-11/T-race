@@ -119,14 +119,15 @@ export default function Header() {
               </Link>
               {
                 Router.pathname !== "/race" && (
-                  <Link href="/race">
-                    <button 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
-                    >
-                      Get Started
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      Router.push('/race');
+                    }}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
+                  >
+                    Get Started
+                  </button>
                 )
               }
               {/* Signup/Login/Logout/Avatar */}
