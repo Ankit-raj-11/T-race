@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
+import { useRouter } from 'next/router';
 import { Menu, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { user, signInWithGoogle, logout, loading } = useAuth();
-
+  const Router = useRouter();
   return (
     <header className="sticky top-0 z-50 border-b border-gray-800 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
@@ -40,9 +41,14 @@ export default function Header() {
             >
               Race
             </Link>
-            <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
-              Get Started
-            </button>
+            {
+                Router.pathname !== "/race" && (
+                  <Link href="/race">
+                    <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
+                      Get Started
+                    </button>
+                  </Link>
+            )}
             {/* Signup/Login/Logout/Avatar */}
             {!loading && !user && (
               <>
@@ -111,9 +117,19 @@ export default function Header() {
               >
                 Race
               </Link>
-              <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full">
-                Get Started
-              </button>
+              {
+                Router.pathname !== "/race" && (
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      Router.push('/race');
+                    }}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
+                  >
+                    Get Started
+                  </button>
+                )
+              }
               {/* Signup/Login/Logout/Avatar */}
               {!loading && !user && (
                 <>
