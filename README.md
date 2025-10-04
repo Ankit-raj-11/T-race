@@ -38,3 +38,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+## Environment variables
+
+This project requires Firebase configuration to run authentication and other features. Do not commit your real secrets to the repository.
+
+- Copy `.env.example` to `.env.local` (or `.env`) and fill in your Firebase values.
+- For Next.js client-side usage, variables must be prefixed with `NEXT_PUBLIC_` (already set in `.env.example`).
+- `.env*` is ignored by the repository's `.gitignore` to avoid leaking secrets.
+
+If you deploy to Vercel or another hosting provider, set the same environment variables in the project settings there.
