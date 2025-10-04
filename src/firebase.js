@@ -15,21 +15,18 @@ const firebaseConfig = {
 
 function assertEnvConfig(cfg) {
   const missing = Object.entries(cfg)
-    .filter(([, v]) => !v)
+    .filter(([, v]) => v == null || v === '')
     .map(([k]) => k);
   if (missing.length) {
-    // Only warn in development to avoid build-time failures; throw in production.
-    const msg = `Missing Firebase config environment variables: ${missing.join(
-      ", "
-    )}. See .env.example.`;
+    const msg = `Missing Firebase config environment variables: ${missing.join(", ")}. See .env.example.`;
     if (process.env.NODE_ENV === "production") {
       throw new Error(msg);
     } else {
-      // eslint-disable-next-line no-console
       console.warn(msg);
     }
   }
 }
+
 
 assertEnvConfig(firebaseConfig);
 
