@@ -6,21 +6,28 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-export default function Timer({ duration, onFinish }) {
+export default function Timer({ duration, onFinish, isActive = true }) {
   const [time, setTime] = useState(duration ?? 0);
-  const [active, setActive] = useState(true);
   const intervalRef = useRef(null);
+  const onFinishRef = useRef(onFinish)
 
   useEffect(() => {
-    if (!active) return;
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    if (!isActive) return;
     intervalRef.current = setInterval(() => {
       setTime((prev) => {
         if (duration !== undefined) {
           // Countdown mode
           if (prev > 0) return prev - 1;
           clearInterval(intervalRef.current);
-          setActive(false);
-          if (onFinish) onFinish();
+          if (onFinishRef.current) onFinishRef.current();
           return 0;
         } else {
           // Elapsed mode
@@ -29,13 +36,12 @@ export default function Timer({ duration, onFinish }) {
       });
     }, 1000);
     return () => clearInterval(intervalRef.current);
-  }, [active, duration, onFinish]);
+  }, [isActive, duration]);
 
   // Reset timer if duration changes
   useEffect(() => {
     if (duration !== undefined) {
       setTime(duration);
-      setActive(true);
     }
   }, [duration]);
 
