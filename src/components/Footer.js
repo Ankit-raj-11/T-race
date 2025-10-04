@@ -61,7 +61,7 @@ export default function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="mt-8 pt-6 border-t border-gray-800 text-center text-sm">
-                    <p>© {year} T-race. All Rights Reserved.</p>
+                    <p>© {year} T-race All Rights Reserved.</p>
                 </div>
             </div>
         </footer>
