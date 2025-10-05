@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { useLayoutEffect } from 'react';
 import Link from 'next/link';
 import Timer from '../components/Timer';
 
@@ -10,6 +11,9 @@ export default function Race() {
   const [timerKey, setTimerKey] = useState(0);
   const [timerActive , setTimerActive] = useState(false)
   const inputRef = useRef(null)
+  const [caretIndex, setCaretIndex] = useState(0);
+  const [caretPos, setCaretPos] = useState({left: 0, top: 0, height: 0});
+  const charRefs = useRef([]);
 
   // Fetch random sentence on component mount
   useEffect(() => {
@@ -40,17 +44,27 @@ export default function Race() {
   };
 
   const handleInputChange = (e) => {
+    const value = e.target.value;
+    setUserInput(value);
+
+    // update caret position from the input's selectionStart
+    const pos = e.target.selectionStart ?? value.length;
+    setCaretIndex(pos);
+
     if (!timerActive && e.target.value.length > 0) {
       setTimerActive(true)
     }
 
-    setUserInput(e.target.value);
-
     // stop timer when user completed sentence 
-    if (e.target.value == sentence){
+    if (value === sentence){
       setTimerActive(false)
     }
   };
+
+  const handleSelectionChange = (e) => {
+    const pos = e.target.selectionStart ?? userInput.length;
+    setCaretIndex(pos);
+  } 
 
   const handleNewSentence = () => {
     fetchNewSentence();
@@ -60,18 +74,52 @@ export default function Race() {
     if (index >= userInput.length){
       return 'untyped';
     }
-    if (userInput[index] === sentence[index]){
-      return 'correct';
-    }
-    return 'incorrect';
+    return userInput[index] === sentence[index] ? 'correct' : 'incorrect';
   }
+
+  useLayoutEffect(() => {
+    // read DOM & set caret position inside rAF to avoid layout thrash / jitter
+    const update = () => {
+      const node = charRefs.current[caretIndex];
+      if (node) {
+        const rect = node.getBoundingClientRect();
+        const parentRect = node.parentNode.getBoundingClientRect();
+
+        setCaretPos({
+          left: rect.left - parentRect.left,
+          top: rect.top - parentRect.top,
+          height: rect.height,
+        });
+      } else {
+        // fallback: place at end
+        setCaretPos((prev) => ({ ...prev, left: prev.left ?? 0 }));
+      }
+    };
+
+    const raf = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(raf);
+  }, [caretIndex, sentence, loading]);
 
   const renderSentence = () => {
     const chars = sentence.split('');
     const extraChars = userInput.length > sentence.length? userInput.slice(sentence.length) : '';
 
     return (
-      <div className="text-lg leading-relaxed font-mono flex flex-wrap">
+      <div className="relative text-lg leading-relaxed font-mono flex flex-wrap" style={{minHeight: 20}}>
+        {/* Animated caret */}
+        {!loading && (
+          <div
+            className="absolute bg-cyan-400 rounded will-change-transform"
+            style={{
+              transform: `translate3d(${caretPos.left ?? 0}px, ${caretPos.top ?? 0}px, 0)`,
+              width: 2,
+              height: caretPos.height || 28,
+              zIndex: 10,
+              pointerEvents: 'none',
+              transition: 'transform 120ms cubic-bezier(.2,.8,.2,1), height 120ms ease',
+            }}
+          />
+        )}
         {chars.map((char, index) => {
           const status = getCharacterStatus(index);
           let colorClass = 'text-white';
@@ -82,17 +130,15 @@ export default function Race() {
             colorClass = 'text-red-300 bg-red-500/20 rounded px-0.5';
           }
 
-          const isCurrentChar = index === userInput.length;
-          const cursorClass = isCurrentChar ? 'border-l-2 border-cyan-400' : '';
-
-          return (
-            <span
+          return(
+            <span 
               key={index}
-              className={`${colorClass} ${cursorClass} ${char === ' ' ? 'mx-0.5' : ''}`}
+              ref={(el) => (charRefs.current[index] = el)}
+              className={`${colorClass} ${char === ' ' ? 'mx-0.5' : ''}`}
             >
               {char === ' ' ? '\u00A0' : char}
             </span>
-          );
+          )
         })}
         {extraChars && (
           <span className="text-red-400 bg-red-400/30 rounded px-1 border-b-2 border-red-500">
@@ -169,9 +215,12 @@ export default function Race() {
                   type="text"
                   value={userInput}
                   onChange={handleInputChange}
+                  onSelect={handleSelectionChange}
+                  onKeyUp={handleSelectionChange}
+                  onMouseUp={handleSelectionChange}
                   placeholder="Start typing the sentence above..."
                   disabled={loading}
-                  className="w-full px-0 py-3 bg-transparent text-lg font-mono text-white placeholder-gray-500 border-0 border-b-2 border-gray-600 focus:border-transparent focus:outline-none transition-all duration-300 disabled:opacity-50"
+                  className="w-full px-0 py-3 bg-transparent text-lg font-mono text-white placeholder-gray-500 border-0 border-b-2 border-gray-600 focus:border-transparent focus:outline-none transition-all duration-300 disabled:opacity-50 cyan-400"
                 />
                 {/* Neon underline effect */}
                 <div className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-to-r from-cyan-400 to-blue-500 transform scale-x-0 origin-left transition-transform duration-300 group-focus-within:scale-x-100"></div>
@@ -179,8 +228,8 @@ export default function Race() {
               
               {/* Progress Info */}
               <div className="mt-4 flex justify-between text-sm text-gray-400">
-                <span>Progress: {userInput.length} / {sentence.length} characters</span>
-                <span>Words: {userInput.split(' ').filter(word => word.length > 0).length} / {sentence.split(' ').length}</span>
+                <span>Progress: {caretIndex} / {sentence.length} characters</span>
+                <span>Words: {userInput.slice(0, caretIndex).split(' ').filter(word => word.length > 0).length} / {sentence.split(' ').length}</span>
               </div>
             </div>
 
