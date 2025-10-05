@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import Timer from '../components/Timer';
@@ -8,11 +8,19 @@ export default function Race() {
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [timerKey, setTimerKey] = useState(0);
+  const [timerActive , setTimerActive] = useState(false)
+  const inputRef = useRef(null)
 
   // Fetch random sentence on component mount
   useEffect(() => {
     fetchNewSentence();
   }, []);
+
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
 
   const fetchNewSentence = async () => {
     setLoading(true);
@@ -21,6 +29,7 @@ export default function Race() {
       const data = await response.json();
       setSentence(data.sentence);
       setUserInput(''); // Reset input when new sentence loads
+      setTimerActive(false)
       setTimerKey(prev => prev + 1); // Reset timer by changing key
     } catch (error) {
       console.error('Failed to fetch sentence:', error);
@@ -31,7 +40,16 @@ export default function Race() {
   };
 
   const handleInputChange = (e) => {
+    if (!timerActive && e.target.value.length > 0) {
+      setTimerActive(true)
+    }
+
     setUserInput(e.target.value);
+
+    // stop timer when user completed sentence 
+    if (e.target.value == sentence){
+      setTimerActive(false)
+    }
   };
 
   const handleNewSentence = () => {
@@ -65,7 +83,7 @@ export default function Race() {
           }
 
           const isCurrentChar = index === userInput.length;
-          const cursorClass = isCurrentChar ? 'border-l-2 border-cyan-400 animate-pulse' : '';
+          const cursorClass = isCurrentChar ? 'border-l-2 border-cyan-400' : '';
 
           return (
             <span
@@ -108,7 +126,7 @@ export default function Race() {
           </Link>
           <button
             onClick={handleNewSentence}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors cursor-pointer"
             disabled={loading}
           >
             <RotateCcw size={16} />
@@ -122,7 +140,7 @@ export default function Race() {
             Typing Race
           </h1>
           {/* Timer below title */}
-          <Timer key={timerKey} duration={60} onFinish={handleNewSentence} />
+          <Timer key={timerKey} duration={60} onFinish={handleNewSentence} isActive={timerActive}/>
         </div>
 
         {/* Main Content */}
@@ -147,6 +165,7 @@ export default function Race() {
               <h3 className="text-lg font-medium mb-3 text-gray-300">Start typing here:</h3>
               <div className="relative group">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={userInput}
                   onChange={handleInputChange}
