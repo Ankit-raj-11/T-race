@@ -24,6 +24,11 @@ export function AuthProvider({ children }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    if (!auth) {
+      throw new Error(
+        "Firebase auth is not initialized. Check your environment variables."
+      );
+    }
     await signInWithPopup(auth, provider);
   };
 
