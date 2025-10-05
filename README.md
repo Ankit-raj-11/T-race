@@ -1,28 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# T-Race - Typing Speed Game
+
+T-Race is a modern typing speed game built with Next.js, Firebase Authentication, and MongoDB Atlas. Players can compete in typing challenges and track their progress with user accounts and leaderboards.
+
+## Features
+
+- 🔐 Firebase Authentication (Google Sign-In)
+- 🎯 Real-time typing speed calculation
+- 🏆 User leaderboards and statistics
+- 📊 MongoDB Atlas for data persistence
+- 🎨 Modern UI with Tailwind CSS
+- 📱 Responsive design
+
+## Tech Stack
+
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Authentication**: Firebase Auth
+- **Database**: MongoDB Atlas with Mongoose
+- **Deployment**: Vercel (recommended)
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+1. **Node.js** (v16 or later)
+2. **npm** or **yarn**
+3. **Firebase project** with Authentication enabled
+4. **MongoDB Atlas cluster** (free tier available)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd T-race
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Environment Setup
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+### 4. Configure Environment Variables
+
+Edit `.env.local` and add your configuration:
+
+```env
+# MongoDB Atlas Connection String
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/trace-db?retryWrites=true&w=majority
+
+# Firebase Configuration (update firebase.js with your config)
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+FIREBASE_APP_ID=your_app_id
+FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
+
+### 5. Firebase Setup
+
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Enable Authentication and configure Google Sign-In
+3. Update `src/firebase.js` with your Firebase configuration
+
+### 6. MongoDB Atlas Setup
+
+1. Create a MongoDB Atlas account at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a new cluster (free tier M0 is sufficient)
+3. Create a database user with read/write permissions
+4. Whitelist your IP address (use `0.0.0.0/0` for development)
+5. Get your connection string and add it to `.env.local`
+
+### 7. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+```
+src/
+├── components/          # React components
+├── context/            # React Context (Auth)
+├── lib/                # Database connection
+├── models/             # Mongoose models
+├── pages/              # Next.js pages and API routes
+│   ├── api/           # API endpoints
+│   │   └── users/     # User-related API routes
+└── styles/            # Global styles
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## API Endpoints
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `POST /api/users/create-or-update` - Create or update user data
+- `PUT /api/users/update-score` - Update user's game score
+- `GET /api/users/leaderboard` - Get leaderboard data
+
+## Usage
+
+1. **Sign In**: Use Google Sign-In to authenticate
+2. **Play Game**: Navigate to the race page to start typing
+3. **Track Progress**: Your scores and statistics are automatically saved
+4. **View Leaderboard**: Check your ranking against other players
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -am 'Add new feature'`
+4. Push to branch: `git push origin feature/new-feature`
+5. Submit a Pull Request
+
+## Deployment
+
+### Deploy to Vercel
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
+
+### Environment Variables for Production
+
+Make sure to set these in your deployment platform:
+
+- `MONGODB_URI`
+- `FIREBASE_API_KEY`
+- `FIREBASE_AUTH_DOMAIN`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_STORAGE_BUCKET`
+- `FIREBASE_MESSAGING_SENDER_ID`
+- `FIREBASE_APP_ID`
+- `FIREBASE_MEASUREMENT_ID`
 
 ## Learn More
 
