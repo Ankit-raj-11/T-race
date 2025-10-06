@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from 'next/router';
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
@@ -41,6 +41,12 @@ export default function Header() {
             >
               Race
             </Link>
+            <Link
+              href="/practice"
+              className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Practice
+            </Link>
             {
                 Router.pathname !== "/race" && (
                   <Link href="/race">
@@ -54,7 +60,7 @@ export default function Header() {
               <>
                 <button
                   onClick={signInWithGoogle}
-                  className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300"
+                  className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition transform hover:scale-105 shadow-lg shadow-cyan-500/20"
                 >
                   Signup
                 </button>
@@ -63,16 +69,17 @@ export default function Header() {
             {!loading && user && (
               <>
                 <img
-                  src={user.photoURL}
+                  src={user.photoURL || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"}
                   alt={user.displayName || "User"}
-                  className="w-9 h-9 rounded-full border-2 border-cyan-500 object-cover mr-2"
+                  className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
                   referrerPolicy="no-referrer"
                 />
                 <button
-                  onClick={logout}
-                  className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300"
+                    onClick={logout}
+                    className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400"
                 >
-                  Logout
+                    <span className="hidden sm:inline">Logout </span>
+                    <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
                 </button>
               </>
             )}
@@ -117,6 +124,13 @@ export default function Header() {
               >
                 Race
               </Link>
+              <Link
+                href="/practice"
+                className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Practice
+              </Link>
               {
                 Router.pathname !== "/race" && (
                   <button
@@ -138,7 +152,7 @@ export default function Header() {
                       setIsMenuOpen(false);
                       signInWithGoogle();
                     }}
-                    className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 w-full"
+                    className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition transform hover:scale-105 shadow-lg shadow-cyan-500/20"
                   >
                     Signup
                   </button>
@@ -157,20 +171,21 @@ export default function Header() {
               {!loading && user && (
                 <div className="flex items-center gap-2">
                   <img
-                    src={user.photoURL}
-                    alt={user.displayName || "User"}
-                    className="w-9 h-9 rounded-full border-2 border-cyan-500 object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      logout();
-                    }}
-                    className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 w-full"
-                  >
-                    Logout
-                  </button>
+					src={user.photoURL || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"}
+					alt={user.displayName || "User"}
+					className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
+					referrerPolicy="no-referrer"
+					/>
+				  <button
+					  onClick={() => {
+						setIsMenuOpen(false);
+						logout();
+					  }}
+					  className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400 w-full"
+				  >
+					  <span className="hidden sm:inline">Logout </span>
+					  <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
+				  </button>
                 </div>
               )}
             </div>
