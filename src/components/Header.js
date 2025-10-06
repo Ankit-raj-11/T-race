@@ -14,7 +14,7 @@ export default function Header() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
                         <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-2xl font-bold">
-                            T-race
+                            <img src="./T-Race.png" alt="T-Race logo" className="w-10 h-10 object-contain" />
                         </span>
                     </Link>
 
