@@ -41,6 +41,12 @@ export default function Header() {
             >
               Race
             </Link>
+            <Link
+              href="/practice"
+              className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Practice
+            </Link>
             {
                 Router.pathname !== "/race" && (
                   <Link href="/race">
@@ -117,6 +123,13 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Race
+              </Link>
+              <Link
+                href="/practice"
+                className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Practice
               </Link>
               {
                 Router.pathname !== "/race" && (
