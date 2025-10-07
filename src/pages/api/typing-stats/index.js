@@ -17,16 +17,20 @@ export default async function handler(req, res) {
 
       // Enforce maximum 50 records per user: delete oldest beyond 50.
       // This cleanup can be done asynchronously so the API responds quickly.
+      // Run cleanup asynchronously. We find documents older than the 50
+      // most-recent entries using sort+skip to avoid some race conditions
+      // that arise with separate count/find/delete sequences.
       (async () => {
         try {
-          const count = await TypingStat.countDocuments({ userId });
-          if (count > 50) {
-            const toRemove = count - 50;
-            const olds = await TypingStat.find({ userId }).sort({ date: 1 }).limit(toRemove).select('_id');
-            const ids = olds.map((d) => d._id);
-            if (ids.length) {
-              await TypingStat.deleteMany({ _id: { $in: ids } });
-            }
+          // find ids of documents older than the 50 most recent
+          const olds = await TypingStat.find({ userId })
+            .sort({ createdAt: 1 })
+            .limit(0)
+            .skip(50)
+            .select('_id');
+          const ids = olds.map((d) => d._id);
+          if (ids.length) {
+            await TypingStat.deleteMany({ _id: { $in: ids } });
           }
         } catch (cleanupErr) {
           console.error('Error during typing-stats cleanup:', cleanupErr);

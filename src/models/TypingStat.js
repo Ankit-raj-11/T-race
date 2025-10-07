@@ -23,16 +23,12 @@ const TypingStatSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  date: {
-    type: Date,
-    default: Date.now,
-    // indexed via compound index below
-  }
+  // relying on timestamps.createdAt instead of a separate `date` field
 }, {
   timestamps: true
 });
 
-// keep index for faster queries per user
-TypingStatSchema.index({ userId: 1, date: 1 });
+// keep index for faster queries per user (use createdAt provided by timestamps)
+TypingStatSchema.index({ userId: 1, createdAt: 1 });
 
 export default mongoose.models.TypingStat || mongoose.model('TypingStat', TypingStatSchema);
