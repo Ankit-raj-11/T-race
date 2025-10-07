@@ -91,8 +91,28 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const saveTypingStat = async (wpm, accuracy, timePlayed) => {
+    if (!user) {
+      console.error('No user logged in');
+      return;
+    }
+
+    try {
+      const resp = await fetch('/api/typing-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.uid, wpm, accuracy, timePlayed }),
+      });
+      if (!resp.ok) {
+        console.error('Failed to save typing stat');
+      }
+    } catch (err) {
+      console.error('Error saving typing stat:', err);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, updateUserScore }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, updateUserScore, saveTypingStat }}>
       {children}
     </AuthContext.Provider>
   );

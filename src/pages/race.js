@@ -122,7 +122,13 @@ export default function Race() {
 
       setUserInput(newInput);
 
-      if (newInput === sentence) {
+      // If user completes the sentence by exact match, by reaching the same
+      // number of characters, or by typing the same number of words, finish.
+      // Finish only when the entire sentence is typed (exact match) or the
+      // typed characters reach the sentence length. Avoid finishing based on
+      // word count because splitting on spaces can count a word as started
+      // before it's completed (causing premature finishes).
+      if (newInput === sentence || newInput.length >= sentence.length) {
         finishRace();
       }
     }
@@ -154,7 +160,23 @@ export default function Race() {
       try {
         await updateUserScore(score, stat.timeElapsed);
       } catch (err) {
-        console.error('Failed to update user score:', error);
+        console.error('Failed to update user score:', err);
+      }
+
+      // also persist typing session stats for long-term tracking
+      try {
+        await fetch('/api/typing-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.uid,
+            wpm: stat.wpm,
+            accuracy: stat.accuracy,
+            timePlayed: stat.timeElapsed,
+          }),
+        });
+      } catch (err) {
+        console.error('Failed to save typing stat:', err);
       }
     }
   };
@@ -176,12 +198,13 @@ export default function Race() {
 
   const calculateStats = () => {
     const metrics = metricsRef.current;
+    // compute elapsed time in seconds; fall back to 1 second to avoid divide-by-zero
     const timeElapsed =
       metrics.endTime && metrics.startTime
-        ? Math.floor((metrics.endTime - metrics.startTime) / 1000)
-        : 60;
+        ? Math.max(1, Math.floor((metrics.endTime - metrics.startTime) / 1000))
+        : 1;
 
-    const timeInMinutes = timeElapsed / 60 || 1;
+    const timeInMinutes = timeElapsed / 60;
 
     // assume 5 characters in words on average
     const wpm = Math.round(metrics.correctChars / 5 / timeInMinutes);
@@ -340,13 +363,9 @@ export default function Race() {
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
                 Typing Race
               </h1>
-              {/* Timer below title */}
-              <Timer
-                key={timerKey}
-                duration={60}
-                onFinish={handleTimerFinish}
-                isActive={timerActive}
-              />
+        {/* Timer below title - 1 minute countdown. It starts when typing begins (isActive) and
+          if the user finishes earlier we stop the timer and save the elapsed time. */}
+        <Timer key={timerKey} duration={60} onFinish={handleTimerFinish} isActive={timerActive} />
             </div>
 
             {/* Main Content */}
@@ -377,6 +396,7 @@ export default function Race() {
                     type="text"
                     value={userInput}
                     onKeyDown={handleKeyDown}
+                    readOnly
                     onPaste={(e) => e.preventDefault()}
                     onClick={() => {
                       // caret ends on click
