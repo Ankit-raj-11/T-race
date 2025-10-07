@@ -122,12 +122,11 @@ export default function Race() {
 
       setUserInput(newInput);
 
-      // If user completes the sentence by exact match, by reaching the same
-      // number of characters, or by typing the same number of words, finish.
-      // Finish only when the entire sentence is typed (exact match) or the
-      // typed characters reach the sentence length. Avoid finishing based on
-      // word count because splitting on spaces can count a word as started
-      // before it's completed (causing premature finishes).
+  // Finish when the user completes the sentence by exact match or by
+  // reaching the same number of characters as the sentence. Avoid
+  // finishing based on word count because splitting on spaces can count
+  // a word as started before it's completed (this produced premature
+  // ends when the last word was only begun).
       if (newInput === sentence || newInput.length >= sentence.length) {
         finishRace();
       }
@@ -387,6 +386,11 @@ export default function Race() {
                     type="text"
                     value={userInput}
                     onKeyDown={handleKeyDown}
+                    // Intentionally provide a no-op onChange so React doesn't warn
+                    // about a controlled input without an onChange handler. This
+                    // input is controlled via `onKeyDown` to capture each key
+                    // and maintain caret behavior. Keeping this explicit helps
+                    // future maintainers understand the choice.
                     onChange={() => {}}
                     onPaste={(e) => e.preventDefault()}
                     onClick={() => {

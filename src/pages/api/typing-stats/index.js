@@ -15,17 +15,23 @@ export default async function handler(req, res) {
       // Insert new stat
       const stat = await TypingStat.create({ userId, wpm, accuracy, timePlayed });
 
-      // Enforce maximum 50 records per user: delete oldest beyond 50
-      const count = await TypingStat.countDocuments({ userId });
-      if (count > 50) {
-        const toRemove = count - 50;
-        // find oldest documents and remove them
-        const olds = await TypingStat.find({ userId }).sort({ date: 1 }).limit(toRemove).select('_id');
-        const ids = olds.map((d) => d._id);
-        if (ids.length) {
-          await TypingStat.deleteMany({ _id: { $in: ids } });
+      // Enforce maximum 50 records per user: delete oldest beyond 50.
+      // This cleanup can be done asynchronously so the API responds quickly.
+      (async () => {
+        try {
+          const count = await TypingStat.countDocuments({ userId });
+          if (count > 50) {
+            const toRemove = count - 50;
+            const olds = await TypingStat.find({ userId }).sort({ date: 1 }).limit(toRemove).select('_id');
+            const ids = olds.map((d) => d._id);
+            if (ids.length) {
+              await TypingStat.deleteMany({ _id: { $in: ids } });
+            }
+          }
+        } catch (cleanupErr) {
+          console.error('Error during typing-stats cleanup:', cleanupErr);
         }
-      }
+      })();
 
       return res.status(201).json({ message: 'Stat saved', stat });
     } catch (error) {
