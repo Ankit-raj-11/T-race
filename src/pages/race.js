@@ -26,7 +26,7 @@ export default function Race() {
     startTime: null,
     endTime: null
   });
-  const { user, updateUserScore } = useAuth();
+  const { user, updateUserScore, saveTypingStat } = useAuth();
 
   // Fetch random sentence on component mount
   useEffect(() => {
@@ -163,20 +163,11 @@ export default function Race() {
         console.error('Failed to update user score:', err);
       }
 
-      // also persist typing session stats for long-term tracking
+      // persist typing session stats for long-term tracking via auth helper
       try {
-        await fetch('/api/typing-stats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.uid,
-            wpm: stat.wpm,
-            accuracy: stat.accuracy,
-            timePlayed: stat.timeElapsed,
-          }),
-        });
+        await saveTypingStat(stat.wpm, stat.accuracy, stat.timeElapsed);
       } catch (err) {
-        console.error('Failed to save typing stat:', err);
+        console.error('Failed to save typing stat via helper:', err);
       }
     }
   };
@@ -396,7 +387,7 @@ export default function Race() {
                     type="text"
                     value={userInput}
                     onKeyDown={handleKeyDown}
-                    readOnly
+                    onChange={() => {}}
                     onPaste={(e) => e.preventDefault()}
                     onClick={() => {
                       // caret ends on click
