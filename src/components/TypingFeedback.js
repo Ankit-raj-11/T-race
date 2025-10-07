@@ -45,7 +45,7 @@ export default function TypingFeedback({
         timeElapsed: Math.round(timeElapsed)
       });
 
-      // Track mistakes
+      // Track mistakes in background only (no instant UI panel)
       trackMistakes();
       
       // Calculate streak
@@ -94,13 +94,15 @@ export default function TypingFeedback({
 
   const getCharacterStyle = (index) => {
     if (index >= userInput.length) {
-      return 'text-gray-400'; // Not typed yet
+      return 'text-gray-400';
     }
-    
+
     if (userInput[index] === text[index]) {
-      return 'text-green-400 bg-green-400/20'; // Correct
+      // Subtle positive feedback
+      return 'text-emerald-400';
     } else {
-      return 'text-red-400 bg-red-400/20'; // Incorrect
+      // Match /race page incorrect style
+      return 'text-red-300 bg-red-500/20 rounded px-0.5';
     }
   };
 
@@ -185,7 +187,7 @@ export default function TypingFeedback({
           {text.split('').map((char, index) => (
             <span
               key={index}
-              className={`${getCharacterStyle(index)} transition-all duration-200 rounded px-0.5`}
+              className={`${getCharacterStyle(index)} transition-colors duration-200 rounded px-0.5`}
             >
               {char}
             </span>
@@ -193,22 +195,7 @@ export default function TypingFeedback({
         </div>
       </div>
 
-      {/* Current Mistakes */}
-      {mistakes.length > 0 && (
-        <div className="bg-gradient-to-r from-red-900/30 to-red-800/30 border border-red-500/50 rounded-xl p-4 shadow-lg">
-          <h4 className="text-red-400 font-bold mb-3 flex items-center gap-2">
-            <span>⚠️</span>
-            Current Mistakes:
-          </h4>
-          <div className="space-y-2 text-sm">
-            {mistakes.slice(-3).map((mistake, index) => (
-              <div key={index} className="text-gray-200 bg-red-900/20 p-2 rounded-lg">
-                <span className="text-red-300 font-medium">Position {mistake.position + 1}:</span> Expected "{mistake.expected}" but typed "{mistake.typed}"
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Current Mistakes panel disabled to avoid interrupting typing flow */}
 
       {/* Motivation Messages */}
       {streak >= 10 && (
