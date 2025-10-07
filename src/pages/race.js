@@ -353,8 +353,9 @@ export default function Race() {
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
                 Typing Race
               </h1>
-        {/* Timer below title - 1 minute countdown. It starts when typing begins (isActive) and
-          if the user finishes earlier we stop the timer and save the elapsed time. */}
+        {/* Timer below title - 1 minute countdown. It starts when the user presses
+          the first printable key (timerActive is set to true in handleKeyDown).
+          If the user finishes earlier, we stop the timer and save the elapsed time. */}
         <Timer key={timerKey} duration={60} onFinish={handleTimerFinish} isActive={timerActive} />
             </div>
 
