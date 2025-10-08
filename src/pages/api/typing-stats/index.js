@@ -1,15 +1,23 @@
 import dbConnect from '@/lib/db';
 import TypingStat from '@/models/TypingStat';
+import { getSession } from '../../../firebase-admin';
 
 export default async function handler(req, res) {
+  const { userId } = await getSession(req, res);
   await dbConnect();
 
   if (req.method === 'POST') {
     try {
-      const { userId, wpm, accuracy, timePlayed } = req.body;
+      const { wpm, accuracy, timePlayed } = req.body;
 
-      if (!userId || typeof wpm !== 'number' || typeof accuracy !== 'number' || typeof timePlayed !== 'number') {
-        return res.status(400).json({ message: 'Missing or invalid fields: userId, wpm, accuracy, timePlayed' });
+      if (
+        typeof wpm !== 'number' ||
+        typeof accuracy !== 'number' ||
+        typeof timePlayed !== 'number'
+      ) {
+        return res
+          .status(400)
+          .json({ message: 'Missing or invalid fields: userId, wpm, accuracy, timePlayed' });
       }
 
       // Insert new stat

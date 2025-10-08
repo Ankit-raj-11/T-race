@@ -1,12 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firebase";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { auth } from '../firebase';
 
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signOut,
-} from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -19,17 +14,13 @@ export function AuthProvider({ children }) {
       if (user) {
         // Save or update user data in MongoDB when they login
         try {
+          const idToken = await user.getIdToken();
           const response = await fetch('/api/users/create-or-update', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              userId: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-            }),
+            body: JSON.stringify({ idToken })
           });
 
           if (response.ok) {
@@ -49,15 +40,23 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     if (!auth) {
-      throw new Error(
-        "Firebase auth is not initialized. Check your environment variables."
-      );
+      throw new Error('Firebase auth is not initialized. Check your environment variables.');
     }
     await signInWithPopup(auth, provider);
   };
 
   const logout = async () => {
     await signOut(auth);
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      console.error('Error logging out', error);
+    }
   };
 
   const updateUserScore = async (score, gameTime = 0) => {
@@ -70,13 +69,9 @@ export function AuthProvider({ children }) {
       const response = await fetch('/api/users/update-score', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          userId: user.uid,
-          score,
-          gameTime,
-        }),
+        body: JSON.stringify({ score, gameTime })
       });
 
       if (response.ok) {
@@ -101,7 +96,7 @@ export function AuthProvider({ children }) {
       const resp = await fetch('/api/typing-stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.uid, wpm, accuracy, timePlayed }),
+        body: JSON.stringify({ wpm, accuracy, timePlayed })
       });
       if (!resp.ok) {
         console.error('Failed to save typing stat');
@@ -112,7 +107,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, logout, updateUserScore, saveTypingStat }}>
+    <AuthContext.Provider
+      value={{ user, loading, signInWithGoogle, logout, updateUserScore, saveTypingStat }}
+    >
       {children}
     </AuthContext.Provider>
   );
