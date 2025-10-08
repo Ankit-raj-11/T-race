@@ -26,6 +26,7 @@ export default function Practice() {
   const [finalPerformance, setFinalPerformance] = useState(null);
   
   const inputRef = useRef(null);
+  const [caretIndex, setCaretIndex] = useState(0);
 
   // Fetch practice text with specific settings
   const fetchPracticeTextWithSettings = async (settingsToUse) => {
@@ -56,6 +57,7 @@ export default function Practice() {
       setIsActive(false);
       setStartTime(null);
       setSessionKey(prev => prev + 1);
+      setCaretIndex(0);
     } catch (error) {
       console.error('Failed to fetch practice text:', error);
       setText('Failed to load text. Please try again.');
@@ -112,6 +114,7 @@ export default function Practice() {
       setIsActive(false);
       setStartTime(null);
       setSessionKey(prev => prev + 1);
+      setCaretIndex(0);
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
@@ -136,6 +139,10 @@ export default function Practice() {
     if (value.length > text.length) return;
     
     setUserInput(value);
+    // Update caret index based on the input's current selection position
+    if (e.target && typeof e.target.selectionStart === 'number') {
+      setCaretIndex(e.target.selectionStart);
+    }
     
     // Start timing on first keystroke
     if (!startTime && !isActive && value.length === 1) {
@@ -165,6 +172,24 @@ export default function Practice() {
         setShowPerformanceModal(true);
       }, 100);
     }
+  };
+
+  // Keep caret index in sync when user navigates with arrows, mouse, Home/End, etc.
+  const handleKeyUp = (e) => {
+    if (!inputRef.current) return;
+    // Read actual caret from DOM; this avoids duplicate increments on key repeat
+    const pos = inputRef.current.selectionStart ?? 0;
+    setCaretIndex(pos);
+  };
+
+  const handleSelect = () => {
+    if (!inputRef.current) return;
+    setCaretIndex(inputRef.current.selectionStart ?? 0);
+  };
+
+  const handleClick = () => {
+    if (!inputRef.current) return;
+    setCaretIndex(inputRef.current.selectionStart ?? 0);
   };
 
   const calculateCorrectChars = (input) => {
@@ -316,6 +341,9 @@ export default function Practice() {
                     ref={inputRef}
                     value={userInput}
                     onChange={handleInputChange}
+                    onKeyUp={handleKeyUp}
+                    onSelect={handleSelect}
+                    onClick={handleClick}
                     placeholder="Start typing the text above..."
                     disabled={isLoading || !text}
                     className="w-full px-6 py-5 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600 rounded-xl text-white font-mono text-lg leading-relaxed placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/20 resize-none transition-all duration-300 shadow-lg"
@@ -332,7 +360,8 @@ export default function Practice() {
                 {/* Quick Actions */}
                 <div className="flex justify-between items-center p-4 bg-gray-800/50 rounded-xl border border-gray-600">
                   <div className="text-sm font-medium text-gray-300">
-                    <span className="text-cyan-400">Progress:</span> {userInput.length} / {text.length} characters 
+                    <span className="text-cyan-400">Progress:</span> {userInput.length} / {text.length} characters
+                    <span className="ml-3 text-gray-400">(Cursor: {caretIndex} / {text.length})</span>
                     <span className="ml-2 px-2 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg">
                       {Math.round(completionPercentage)}%
                     </span>
