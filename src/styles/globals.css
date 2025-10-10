@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -23,4 +23,182 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Badge System Animations - Optimized for 60fps performance */
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes badge-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+  }
+}
+
+/* Enhanced unlock celebration animations with distinct visual effects */
+@keyframes badge-unlock-pop {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 0 rgba(34, 211, 238, 0));
+  }
+  15% {
+    transform: scale(1.2) rotate(-3deg);
+    filter: brightness(1.3) drop-shadow(0 0 15px rgba(34, 211, 238, 0.6));
+  }
+  30% {
+    transform: scale(0.95) rotate(2deg);
+    filter: brightness(1.1) drop-shadow(0 0 10px rgba(34, 211, 238, 0.4));
+  }
+  45% {
+    transform: scale(1.1) rotate(-1deg);
+    filter: brightness(1.2) drop-shadow(0 0 20px rgba(34, 211, 238, 0.7));
+  }
+  60% {
+    transform: scale(0.98) rotate(1deg);
+    filter: brightness(1.05) drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+  }
+  75% {
+    transform: scale(1.05) rotate(-0.5deg);
+    filter: brightness(1.1) drop-shadow(0 0 12px rgba(34, 211, 238, 0.5));
+  }
+  90% {
+    transform: scale(0.99) rotate(0.2deg);
+    filter: brightness(1.02) drop-shadow(0 0 5px rgba(34, 211, 238, 0.2));
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+  }
+}
+
+@keyframes badge-unlock-bounce {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(1.15) translateY(-8px);
+    filter: brightness(1.4);
+  }
+  40% {
+    transform: scale(0.9) translateY(4px);
+    filter: brightness(1.1);
+  }
+  60% {
+    transform: scale(1.08) translateY(-4px);
+    filter: brightness(1.25);
+  }
+  80% {
+    transform: scale(0.95) translateY(2px);
+    filter: brightness(1.05);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: brightness(1.1);
+  }
+}
+
+/* Badge hover animations with hardware acceleration */
+.badge-hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.badge-hover-scale:hover {
+  transform: scale(1.05) translateZ(0);
+}
+
+.badge-glow-effect {
+  animation: badge-glow-pulse 3s ease-in-out infinite;
+  will-change: box-shadow;
+}
+
+/* Enhanced unlock animation classes with different celebration types */
+.badge-unlock-pop {
+  animation: badge-unlock-pop 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  will-change: transform, filter;
+}
+
+.badge-unlock-bounce {
+  animation: badge-unlock-bounce 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  will-change: transform, filter;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .badge-hover-scale,
+  .badge-glow-effect,
+  .badge-unlock-pop,
+  .badge-unlock-bounce {
+    animation: none;
+    transition: none;
+  }
+
+  .badge-hover-scale:hover {
+    transform: none;
+  }
+
+  /* Provide subtle alternative for reduced motion users */
+  .badge-unlock-pop,
+  .badge-unlock-bounce {
+    filter: brightness(1.2);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+  }
+}
+/* Badge ReactTooltip Styles */
+.badge-tooltip {
+  background-color: #1f2937 !important; /* bg-gray-800 */
+  border: 1px solid #4b5563 !important; /* border-gray-600 */
+  border-radius: 0.5rem !important; /* rounded-lg */
+  padding: 1rem !important; /* p-4 */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; /* shadow-xl */
+  z-index: 50 !important;
+  max-width: 20rem !important; /* max-w-xs */
+  font-family: inherit !important;
+}
+
+/* Ensure tooltip arrow matches the dark theme */
+.badge-tooltip .react-tooltip-arrow {
+  border-color: #1f2937 !important;
+}
+
+/* Mobile backdrop for touch interactions */
+@media (max-width: 768px) {
+  .badge-tooltip-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: transparent;
+  }
+}
+
+/* Ensure proper focus styles for accessibility */
+[data-tooltip-id='badge-tooltip']:focus {
+  outline: 2px solid #06b6d4;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .badge-tooltip {
+    border: 2px solid #ffffff !important;
+    background-color: #000000 !important;
+  }
+
+  .badge-tooltip .react-tooltip-arrow {
+    border-color: #000000 !important;
+  }
 }

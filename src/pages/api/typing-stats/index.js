@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/db';
 import TypingStat from '@/models/TypingStat';
-import { getSession } from '../../../firebase-admin';
+import { getSession } from '@/firebase-admin';
+import badgeService from '@/lib/badge/badgeService';
 
 export default async function handler(req, res) {
   const { userId } = await getSession(req, res);
@@ -44,6 +45,13 @@ export default async function handler(req, res) {
           console.error('Error during typing-stats cleanup:', cleanupErr);
         }
       })();
+
+      // Check if user has obtained new badges
+      const result = await badgeService.evaluateAchievements(userId, {
+        wpm,
+        accuracy,
+        timePlayed
+      });
 
       return res.status(201).json({ message: 'Stat saved', stat });
     } catch (error) {
