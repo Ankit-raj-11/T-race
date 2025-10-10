@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Lock } from 'lucide-react';
 
 // Hook to detect reduced motion preference
@@ -24,16 +24,40 @@ export default function Badge({
   badge,
   showTooltip = false,
   isUnlocked = false,
+  isNewlyUnlocked = false,
   progress,
   animationEnabled = true,
-  onAnimationComplete = () => {},
+  /**
+   * When isNewlyUnlocked animation completes, this will be called
+   */
+  onAnimationComplete,
   onClick
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const badgeRef = useRef(null);
 
   // Respect user's motion preferences
   const shouldAnimate = animationEnabled && !prefersReducedMotion;
+
+  // Handle animation completion
+  useEffect(() => {
+    const badgeElement = badgeRef.current;
+    if (!badgeElement || !onAnimationComplete) return;
+
+    const handleAnimationEnd = (event) => {
+      // Only trigger for animations on this specific element
+      if (event.target === badgeElement) {
+        onAnimationComplete(event.animationName, badge);
+      }
+    };
+
+    badgeElement.addEventListener('animationend', handleAnimationEnd);
+
+    return () => {
+      badgeElement.removeEventListener('animationend', handleAnimationEnd);
+    };
+  }, [onAnimationComplete, badge]);
 
   // Generate tooltip content
   const getTooltipContent = () => {
@@ -85,23 +109,16 @@ export default function Badge({
   // Smooth transitions for all states (optimized for 60fps)
   const transitionClasses = 'transition-all duration-300 ease-out';
 
-  // Hover effects for unlocked badges only
-  const getHoverClasses = () => {
-    if (!isUnlocked || !shouldAnimate) return '';
+  const hoverClasses =
+    isHovered && isUnlocked && shouldAnimate ? 'border-cyan-400 shadow-xl shadow-cyan-400/25' : '';
 
-    const baseHover = 'border-cyan-400 shadow-xl shadow-cyan-400/25';
-
-    return isHovered ? `${baseHover} badge-hover-scale` : '';
-  };
-
-  const hoverClasses = getHoverClasses();
-
-  // Glow effect for unlocked badges
-  const glowClasses = isUnlocked && shouldAnimate ? 'badge-glow-effect' : '';
+  // Bouncing animation for newly unlocked badges
+  const bounceClasses = isNewlyUnlocked && shouldAnimate ? 'badge-bounce' : '';
 
   return (
     <div
-      className={`${baseClasses} ${transitionClasses} ${unlockedClasses} ${lockedClasses} ${hoverClasses} ${glowClasses}`}
+      ref={badgeRef}
+      className={`${baseClasses} ${transitionClasses} ${unlockedClasses} ${lockedClasses} ${hoverClasses} ${bounceClasses}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

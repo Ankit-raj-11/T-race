@@ -264,14 +264,15 @@ class BadgeService {
     const { totalTimePlayed } = user;
     const { threshold, condition } = criteria;
 
+    const thresholdInSec = threshold * 60;
     let unlocked = false;
 
     switch (condition) {
       case '>=':
-        unlocked = totalTimePlayed >= threshold;
+        unlocked = totalTimePlayed >= thresholdInSec;
         break;
       case '==':
-        unlocked = totalTimePlayed === threshold;
+        unlocked = totalTimePlayed === thresholdInSec;
         break;
       default:
         throw new Error(`Unsupported condition for time played criteria: ${condition}`);
@@ -279,9 +280,9 @@ class BadgeService {
 
     return {
       unlocked,
-      progress: Math.min((totalTimePlayed / threshold) * 100, 100),
+      progress: Math.min((totalTimePlayed / thresholdInSec) * 100, 100),
       currentValue: totalTimePlayed,
-      targetValue: threshold
+      targetValue: thresholdInSec
     };
   }
 

@@ -31,6 +31,13 @@ const sampleUserBadges = {
     currentValue: 20,
     targetValue: 100,
     isViewed: false
+  },
+  ['aim_high']: {
+    unlocked: false,
+    progress: 40,
+    currentValue: 4,
+    targetValue: 10,
+    isViewed: false
   }
 };
 

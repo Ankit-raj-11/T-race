@@ -34,11 +34,14 @@ export default function BadgeReactTooltip() {
       case 'wpm':
         return `Achieve ${threshold}+ words per minute`;
       case 'accuracy':
-        return `Maintain ${threshold}% accuracy`;
+        return `Achieve ${threshold}% accuracy`;
       case 'games_played':
         return `Complete ${threshold} typing sessions`;
+      case 'time_played':
+        return `Play over ${threshold} minutes`;
       case 'streak':
-        return `Maintain ${threshold} consecutive high-performance sessions`;
+        return `Maintain ${threshold} consecutive high-performance (>=95% accuracy) sessions`;
+
       default:
         return `Meet ${type} requirement: ${threshold}`;
     }

@@ -38,7 +38,7 @@ export const BADGE_COLLECTION = [
   {
     badgeId: 'accuracy_expert_95',
     name: 'Accuracy Expert',
-    description: 'Maintain 95% accuracy in a race',
+    description: 'Achieve 95% accuracy in a race',
     iconUrl: null,
     category: 'accuracy',
     criteria: { type: 'accuracy', threshold: 95, condition: '>=' },
@@ -51,6 +51,24 @@ export const BADGE_COLLECTION = [
     iconUrl: null,
     category: 'accuracy',
     criteria: { type: 'accuracy', threshold: 100, condition: '==' },
+    rarity: 'rare'
+  },
+  {
+    badgeId: 'warm_up',
+    name: 'Warm Up',
+    description: 'Play over 1 minute',
+    iconUrl: null,
+    category: 'milestone',
+    criteria: { type: 'time_played', threshold: 1, condition: '>=' },
+    rarity: 'common'
+  },
+  {
+    badgeId: 'high_roller',
+    name: 'High Roller',
+    description: 'Play over 60 minutes',
+    iconUrl: null,
+    category: 'milestone',
+    criteria: { type: 'time_played', threshold: 60, condition: '>=' },
     rarity: 'legendary'
   },
   {
@@ -70,5 +88,14 @@ export const BADGE_COLLECTION = [
     category: 'milestone',
     criteria: { type: 'games_played', threshold: 100, condition: '>=' },
     rarity: 'rare'
+  },
+  {
+    badgeId: 'aim_high',
+    name: 'Aim High',
+    description: 'Perform well 10 times in a row',
+    iconUrl: null,
+    category: 'consistency',
+    criteria: { type: 'streak', threshold: 10, condition: 'consecutive' },
+    rarity: 'legendary'
   }
 ];

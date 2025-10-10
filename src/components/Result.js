@@ -46,6 +46,16 @@ export default function ShowResults({ stats, onNextRound, onBackHome }) {
 
       {/* Stats display */}
       <div className="max-w-4xl mx-auto">
+        {/* Badge Collection Section */}
+        {user && (
+          <div className="my-8">
+            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-cyan-400 mb-4">Badge Collection</h3>
+              <BadgeCollection showOnlyNearCompletion={false} />
+            </div>
+          </div>
+        )}
+
         <div className="mb-8 space-y-8">
           {/* WPM */}
           <div className="text-center">
@@ -96,26 +106,26 @@ export default function ShowResults({ stats, onNextRound, onBackHome }) {
           )}
         </div>
 
-        {/* Badge Collection Section */}
-        {user && (
-          <div className="mt-8">
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-cyan-400 mb-4">Badge Collection</h3>
-              <BadgeCollection showOnlyNearCompletion={false} />
-            </div>
-          </div>
-        )}
-
         {/* Performance Summary */}
         {/* <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-                    <h4 className="text-lg font-medium mb-2 text-cyan-400">Performance Summary:</h4>
-                    <ul className="text-gray-300 space-y-1">
-                        <li>• You typed at {wpm} words per minute</li>
-                        <li>• Your accuracy was {accuracy}%</li>
-                        <li>• You correctly typed {correctChars} out of {totalChars} characters</li>
-                        {commonMistakes.length > 0 && <li>• Focus on practicing: {topMistakes.slice(0, 3).map(([char]) => char === ' ' ? 'space' : `"${char}"`).join(', ')}</li>}
-                    </ul>
-                </div> */}
+          <h4 className="text-lg font-medium mb-2 text-cyan-400">Performance Summary:</h4>
+          <ul className="text-gray-300 space-y-1">
+            <li>• You typed at {wpm} words per minute</li>
+            <li>• Your accuracy was {accuracy}%</li>
+            <li>
+              • You correctly typed {correctChars} out of {totalChars} characters
+            </li>
+            {commonMistakes.length > 0 && (
+              <li>
+                • Focus on practicing:{' '}
+                {topMistakes
+                  .slice(0, 3)
+                  .map(([char]) => (char === ' ' ? 'space' : `"${char}"`))
+                  .join(', ')}
+              </li>
+            )}
+          </ul>
+        </div> */}
       </div>
     </>
   );
