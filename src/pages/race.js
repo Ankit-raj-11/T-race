@@ -122,11 +122,11 @@ export default function Race() {
 
       setUserInput(newInput);
 
-  // Finish when the user completes the sentence by exact match or by
-  // reaching the same number of characters as the sentence. Avoid
-  // finishing based on word count because splitting on spaces can count
-  // a word as started before it's completed (this produced premature
-  // ends when the last word was only begun).
+      // Finish when the user completes the sentence by exact match or by
+      // reaching the same number of characters as the sentence. Avoid
+      // finishing based on word count because splitting on spaces can count
+      // a word as started before it's completed (this produced premature
+      // ends when the last word was only begun).
       if (newInput === sentence || newInput.length >= sentence.length) {
         finishRace();
       }
@@ -145,7 +145,6 @@ export default function Race() {
     metricsRef.current.endTime = Date.now();
 
     setTimerActive(false);
-    setShowResults(true);
     /**
      * Update score only if user is logged in
      */
@@ -169,6 +168,9 @@ export default function Race() {
         console.error('Failed to save typing stat via helper:', err);
       }
     }
+
+    // Show results after typing stat has been updated
+    setShowResults(true);
   };
 
   const handleTimerFinish = () => {
@@ -353,10 +355,15 @@ export default function Race() {
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
                 Typing Race
               </h1>
-        {/* Timer below title - 1 minute countdown. It starts when the user presses
+              {/* Timer below title - 1 minute countdown. It starts when the user presses
           the first printable key (timerActive is set to true in handleKeyDown).
           If the user finishes earlier, we stop the timer and save the elapsed time. */}
-        <Timer key={timerKey} duration={60} onFinish={handleTimerFinish} isActive={timerActive} />
+              <Timer
+                key={timerKey}
+                duration={60}
+                onFinish={handleTimerFinish}
+                isActive={timerActive}
+              />
             </div>
 
             {/* Main Content */}
