@@ -26,7 +26,7 @@ export default function Race() {
     startTime: null,
     endTime: null
   });
-  const { user, updateUserScore } = useAuth();
+  const { user, updateUserScore, saveTypingStat } = useAuth();
 
   // Fetch random sentence on component mount
   useEffect(() => {
@@ -122,7 +122,12 @@ export default function Race() {
 
       setUserInput(newInput);
 
-      if (newInput === sentence) {
+      // Finish when the user completes the sentence by exact match or by
+      // reaching the same number of characters as the sentence. Avoid
+      // finishing based on word count because splitting on spaces can count
+      // a word as started before it's completed (this produced premature
+      // ends when the last word was only begun).
+      if (newInput === sentence || newInput.length >= sentence.length) {
         finishRace();
       }
     }
@@ -140,7 +145,6 @@ export default function Race() {
     metricsRef.current.endTime = Date.now();
 
     setTimerActive(false);
-    setShowResults(true);
     /**
      * Update score only if user is logged in
      */
@@ -154,9 +158,19 @@ export default function Race() {
       try {
         await updateUserScore(score, stat.timeElapsed);
       } catch (err) {
-        console.error('Failed to update user score:', error);
+        console.error('Failed to update user score:', err);
+      }
+
+      // persist typing session stats for long-term tracking via auth helper
+      try {
+        await saveTypingStat(stat.wpm, stat.accuracy, stat.timeElapsed);
+      } catch (err) {
+        console.error('Failed to save typing stat via helper:', err);
       }
     }
+
+    // Show results after typing stat has been updated
+    setShowResults(true);
   };
 
   const handleTimerFinish = () => {
@@ -176,12 +190,13 @@ export default function Race() {
 
   const calculateStats = () => {
     const metrics = metricsRef.current;
+    // compute elapsed time in seconds; fall back to 1 second to avoid divide-by-zero
     const timeElapsed =
       metrics.endTime && metrics.startTime
-        ? Math.floor((metrics.endTime - metrics.startTime) / 1000)
-        : 60;
+        ? Math.max(1, Math.floor((metrics.endTime - metrics.startTime) / 1000))
+        : 1;
 
-    const timeInMinutes = timeElapsed / 60 || 1;
+    const timeInMinutes = timeElapsed / 60;
 
     // assume 5 characters in words on average
     const wpm = Math.round(metrics.correctChars / 5 / timeInMinutes);
@@ -340,7 +355,9 @@ export default function Race() {
               <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
                 Typing Race
               </h1>
-              {/* Timer below title */}
+              {/* Timer below title - 1 minute countdown. It starts when the user presses
+          the first printable key (timerActive is set to true in handleKeyDown).
+          If the user finishes earlier, we stop the timer and save the elapsed time. */}
               <Timer
                 key={timerKey}
                 duration={60}
@@ -377,6 +394,12 @@ export default function Race() {
                     type="text"
                     value={userInput}
                     onKeyDown={handleKeyDown}
+                    // Intentionally provide a no-op onChange so React doesn't warn
+                    // about a controlled input without an onChange handler. This
+                    // input is controlled via `onKeyDown` to capture each key
+                    // and maintain caret behavior. Keeping this explicit helps
+                    // future maintainers understand the choice.
+                    onChange={() => {}}
                     onPaste={(e) => e.preventDefault()}
                     onClick={() => {
                       // caret ends on click

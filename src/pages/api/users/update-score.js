@@ -1,19 +1,22 @@
 import dbConnect from '../../../lib/db';
 import User from '../../../models/User';
+import { getSession } from '../../../firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== 'PUT') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
+  const { userId } = await getSession(req, res);
+
   try {
     await dbConnect();
 
-    const { userId, score, gameTime } = req.body;
+    const { score, gameTime } = req.body;
 
-    if (!userId || typeof score !== 'number') {
-      return res.status(400).json({ 
-        message: 'Missing required fields: userId, score' 
+    if (typeof score !== 'number') {
+      return res.status(400).json({
+        message: 'Missing required fields: score'
       });
     }
 
@@ -42,14 +45,14 @@ export default async function handler(req, res) {
         userId: user.userId,
         highestScore: user.highestScore,
         totalGamesPlayed: user.totalGamesPlayed,
-        totalTimePlayed: user.totalTimePlayed,
+        totalTimePlayed: user.totalTimePlayed
       }
     });
   } catch (error) {
     console.error('Error updating score:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Internal server error',
-      error: error.message 
+      error: error.message
     });
   }
 }
