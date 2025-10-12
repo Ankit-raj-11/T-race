@@ -78,6 +78,7 @@ export default function Header() {
                   height={40}
                   className="rounded-full border-3 border-cyan-500 object-cover mr-2"
                   referrerPolicy="no-referrer"
+                  unoptimized={true} // Use unoptimized for external URLs like ShutterStock or user photos if Next config is complicated
                 />
                 <button
                   onClick={logout}
@@ -155,16 +156,7 @@ export default function Header() {
                   >
                     Signup
                   </button>
-                  {/* Optionally, you can keep the Login button if you want */}
-                  {/* <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      signInWithGoogle();
-                    }}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 w-full"
-                  >
-                    Login
-                  </button> */}
+                  {/* The commented Login button is left as is */}
                 </>
               )}
               {!loading && user && (

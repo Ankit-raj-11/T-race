@@ -6,8 +6,8 @@ import ShowResults from '../components/Result';
 import { useAuth } from '../context/AuthContext';
 
 export default function Race() {
-  const [sentence, setSentence] = useState('');
-  const [userInput, setUserInput] = useState('');
+  const [sentence, setSentence] = useState("");
+  const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [timerKey, setTimerKey] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
@@ -47,13 +47,13 @@ export default function Race() {
   const fetchNewSentence = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/sentences');
+      const response = await fetch("/api/sentences");
       const data = await response.json();
       setSentence(data.sentence);
       resetRace();
     } catch (error) {
-      console.error('Failed to fetch sentence:', error);
-      setSentence('Failed to load sentence. Please try again.');
+      console.error("Failed to fetch sentence:", error);
+      setSentence("Failed to load sentence. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -290,7 +290,7 @@ export default function Race() {
               ref={(el) => (charRefs.current[index] = el)}
               className={`${colorClass} ${char === ' ' ? 'mx-0.5' : ''}`}
             >
-              {char === ' ' ? '\u00A0' : char}
+              {char === " " ? "\u00A0" : char}
             </span>
           );
         })}
@@ -351,6 +351,7 @@ export default function Race() {
                 New Sentence
               </button>
             </div>
+          </div>
 
             {/* Title and Timer - Centered */}
             <div className="text-center mb-8">
