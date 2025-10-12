@@ -67,9 +67,10 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-cyan-400">
-                Precision Training
-              </h3>
+              <Link href="/practice"
+               className="text-xl font-semibold mb-3 text-cyan-400">
+                Practice Mode
+              </Link>
               <p className="text-gray-300">
                 Improve your typing accuracy with our advanced real-time
                 feedback system

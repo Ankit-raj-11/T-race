@@ -55,9 +55,9 @@ UserSchema.pre('save', function(next) {
   next();
 });
 
-// Create indexes for better performance
-UserSchema.index({ userId: 1 });
-UserSchema.index({ email: 1 });
+// Create indexes for better performance. Note: `userId` and `email` already
+// have `unique: true` in their field definitions which creates indexes,
+// so we avoid declaring those again to prevent duplicate index warnings.
 UserSchema.index({ highestScore: -1 }); // For leaderboard queries
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

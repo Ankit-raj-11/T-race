@@ -1,10 +1,9 @@
-import React from "react";
-import Link from "next/link";
-// 1. IMPORT THE IMAGE COMPONENT
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { Menu, X, LogOut } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -43,7 +42,13 @@ export default function Header() {
             >
               Race
             </Link>
-            {Router.pathname !== "/race" && (
+            <Link
+              href="/practice"
+              className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Practice
+            </Link>
+            {Router.pathname !== '/race' && (
               <Link href="/race">
                 <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
                   Get Started
@@ -63,16 +68,15 @@ export default function Header() {
             )}
             {!loading && user && (
               <>
-                {/* 2a. REPLACED <img> WITH <Image> */}
                 <Image
                   src={
                     user.photoURL ||
-                    "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"
+                    'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
                   }
-                  alt={user.displayName || "User"}
-                  width={40} // REQUIRED for Next/Image (w-10 h-10)
-                  height={40} // REQUIRED for Next/Image (w-10 h-10)
-                  className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
+                  alt={user.displayName || 'User'}
+                  width={40}
+                  height={40}
+                  className="rounded-full border-3 border-cyan-500 object-cover mr-2"
                   referrerPolicy="no-referrer"
                   unoptimized={true} // Use unoptimized for external URLs like ShutterStock or user photos if Next config is complicated
                 />
@@ -93,11 +97,7 @@ export default function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
@@ -126,11 +126,18 @@ export default function Header() {
               >
                 Race
               </Link>
-              {Router.pathname !== "/race" && (
+              <Link
+                href="/practice"
+                className="text-gray-300 hover:text-white transition-colors duration-300 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Practice
+              </Link>
+              {Router.pathname !== '/race' && (
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
-                    Router.push("/race");
+                    Router.push('/race');
                   }}
                   className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
                 >
@@ -154,18 +161,16 @@ export default function Header() {
               )}
               {!loading && user && (
                 <div className="flex items-center gap-2">
-                  {/* 2b. REPLACED <img> WITH <Image> */}
                   <Image
                     src={
                       user.photoURL ||
-                      "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"
+                      'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
                     }
-                    alt={user.displayName || "User"}
-                    width={40} // REQUIRED for Next/Image (w-10 h-10)
-                    height={40} // REQUIRED for Next/Image (w-10 h-10)
-                    className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
+                    alt={user.displayName || 'User'}
+                    width={40}
+                    height={40}
+                    className="rounded-full border-3 border-cyan-500 object-cover mr-2"
                     referrerPolicy="no-referrer"
-                    unoptimized={true} // Use unoptimized for external URLs like ShutterStock or user photos
                   />
                   <button
                     onClick={() => {
@@ -189,9 +194,8 @@ export default function Header() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-            backgroundSize: "40px 40px",
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
           }}
         ></div>
       </div>
