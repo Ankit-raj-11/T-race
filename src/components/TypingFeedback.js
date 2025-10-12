@@ -1,14 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TrendingUp, Target, Zap, Award } from 'lucide-react';
 
-export default function TypingFeedback({ 
-  text, 
-  userInput, 
-  startTime, 
-  isActive,
-  mode,
-  targetWpm 
-}) {
+export default function TypingFeedback({ text, userInput, startTime, isActive, mode, targetWpm }) {
   const [stats, setStats] = useState({
     wpm: 0,
     accuracy: 100,
@@ -21,6 +14,17 @@ export default function TypingFeedback({
   const [mistakes, setMistakes] = useState([]);
   const [streak, setStreak] = useState(0);
 
+  // FIX: Wrap in useCallback to prevent continuous re-creation and meet hook dependency requirements
+  const calculateCorrectChars = useCallback(() => {
+    let correct = 0;
+    for (let i = 0; i < userInput.length && i < text.length; i++) {
+      if (userInput[i] === text[i]) {
+        correct++;
+      }
+    }
+    return correct;
+  }, [userInput, text]); // Depends on userInput and text
+
   useEffect(() => {
     if (!isActive || !startTime) return;
 
@@ -29,11 +33,12 @@ export default function TypingFeedback({
       const timeElapsed = (now - startTime) / 1000; // seconds
       const minutes = timeElapsed / 60;
 
+      // NOTE: calculateCorrectChars is now stable due to useCallback
       const correctChars = calculateCorrectChars();
       const totalChars = userInput.length;
       const incorrectChars = totalChars - correctChars;
-      
-      const wpm = minutes > 0 ? Math.round((correctChars / 5) / minutes) : 0;
+
+      const wpm = minutes > 0 ? Math.round(correctChars / 5 / minutes) : 0;
       const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
 
       setStats({
@@ -44,29 +49,14 @@ export default function TypingFeedback({
         totalChars,
         timeElapsed: Math.round(timeElapsed)
       });
-
-      // Track mistakes in background only (no instant UI panel)
-      trackMistakes();
-      
-      // Calculate streak
-      calculateStreak();
-
     }, 100);
 
+    // FIX: Added calculateCorrectChars to dependencies to clear the warning
     return () => clearInterval(interval);
-  }, [userInput, startTime, isActive, text]);
+  }, [userInput, startTime, isActive, text, calculateCorrectChars]);
 
-  const calculateCorrectChars = () => {
-    let correct = 0;
-    for (let i = 0; i < userInput.length && i < text.length; i++) {
-      if (userInput[i] === text[i]) {
-        correct++;
-      }
-    }
-    return correct;
-  };
-
-  const trackMistakes = () => {
+  // Track mistakes only when userInput or text changes
+  useEffect(() => {
     const newMistakes = [];
     for (let i = 0; i < userInput.length && i < text.length; i++) {
       if (userInput[i] !== text[i]) {
@@ -78,9 +68,10 @@ export default function TypingFeedback({
       }
     }
     setMistakes(newMistakes);
-  };
+  }, [userInput, text]);
 
-  const calculateStreak = () => {
+  // Calculate streak only when userInput or text changes
+  useEffect(() => {
     let currentStreak = 0;
     for (let i = userInput.length - 1; i >= 0 && i < text.length; i--) {
       if (userInput[i] === text[i]) {
@@ -90,7 +81,7 @@ export default function TypingFeedback({
       }
     }
     setStreak(currentStreak);
-  };
+  }, [userInput, text]);
 
   const getCharacterStyle = (index) => {
     if (index >= userInput.length) {
@@ -119,9 +110,11 @@ export default function TypingFeedback({
             </div>
             <span className="text-sm font-medium text-gray-400">WPM</span>
           </div>
-          <div className={`text-3xl font-bold ${
-            targetWpm && stats.wpm >= targetWpm ? 'text-green-400' : 'text-yellow-400'
-          }`}>
+          <div
+            className={`text-3xl font-bold ${
+              targetWpm && stats.wpm >= targetWpm ? 'text-green-400' : 'text-yellow-400'
+            }`}
+          >
             {stats.wpm}
           </div>
         </div>
@@ -133,10 +126,15 @@ export default function TypingFeedback({
             </div>
             <span className="text-sm font-medium text-gray-400">Accuracy</span>
           </div>
-          <div className={`text-3xl font-bold ${
-            stats.accuracy >= 95 ? 'text-green-400' : 
-            stats.accuracy >= 85 ? 'text-yellow-400' : 'text-red-400'
-          }`}>
+          <div
+            className={`text-3xl font-bold ${
+              stats.accuracy >= 95
+                ? 'text-green-400'
+                : stats.accuracy >= 85
+                ? 'text-yellow-400'
+                : 'text-red-400'
+            }`}
+          >
             {stats.accuracy}%
           </div>
         </div>
@@ -148,9 +146,7 @@ export default function TypingFeedback({
             </div>
             <span className="text-sm font-medium text-gray-400">Streak</span>
           </div>
-          <div className="text-3xl font-bold text-purple-400">
-            {streak}
-          </div>
+          <div className="text-3xl font-bold text-purple-400">{streak}</div>
         </div>
 
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-orange-500/20 rounded-xl p-4 text-center shadow-lg hover:shadow-orange-500/20 transition-all duration-300">
@@ -161,16 +157,18 @@ export default function TypingFeedback({
             <span className="text-sm font-medium text-gray-400">Time</span>
           </div>
           <div className="text-3xl font-bold text-orange-400">
-            {mode === 'untimed' ? `${stats.timeElapsed}s` : `${Math.max(0, 60 - stats.timeElapsed)}s`}
+            {mode === 'untimed'
+              ? `${stats.timeElapsed}s`
+              : `${Math.max(0, 60 - stats.timeElapsed)}s`}
           </div>
         </div>
       </div>
 
       {/* Progress Bar */}
       <div className="bg-gray-700/50 rounded-full h-3 mb-6 overflow-hidden border border-gray-600">
-        <div 
+        <div
           className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out shadow-lg"
-          style={{ 
+          style={{
             width: `${Math.min(progress, 100)}%`,
             boxShadow: '0 0 20px rgba(34, 211, 238, 0.5)'
           }}
@@ -187,7 +185,9 @@ export default function TypingFeedback({
           {text.split('').map((char, index) => (
             <span
               key={index}
-              className={`${getCharacterStyle(index)} transition-colors duration-200 rounded px-0.5`}
+              className={`${getCharacterStyle(
+                index
+              )} transition-colors duration-200 rounded px-0.5`}
             >
               {char}
             </span>
@@ -209,7 +209,8 @@ export default function TypingFeedback({
       {targetWpm && stats.wpm >= targetWpm && (
         <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 border border-blue-500/50 rounded-xl p-4 text-center shadow-lg animate-bounce">
           <div className="text-blue-400 font-bold text-lg">
-            🎯 TARGET ACHIEVED! You're typing at {stats.wpm} WPM! 🎯
+            {/* FIX APPLIED HERE: Replaced ' with &apos; */}
+            🎯 TARGET ACHIEVED! You&apos;re typing at {stats.wpm} WPM! 🎯
           </div>
         </div>
       )}

@@ -12,17 +12,17 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
   const handleCustomTextSubmit = () => {
     if (customText.trim()) {
       // Update settings to use custom text
-      const customSettings = { 
-        ...settings, 
-        source: 'custom', 
-        customText: customText.trim() 
+      const customSettings = {
+        ...settings,
+        source: 'custom',
+        customText: customText.trim()
       };
-      
+
       console.log('Custom text submitted:', customSettings);
-      
+
       // Update the main settings
       onSettingsChange(customSettings);
-      
+
       // Clear the input
       setCustomText('');
     }
@@ -54,27 +54,39 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
         <div className="mb-4 p-4 bg-gradient-to-r from-gray-700/70 to-gray-600/70 rounded-lg border border-gray-600">
           <div className="flex flex-wrap gap-4 text-sm text-gray-200">
             <span>
-              <strong>Source:</strong> {
-                settings.source === 'custom' ? 'Custom Text' :
-                settings.source === 'randomWords' ? 'Random Words' :
-                settings.source === 'quotes' ? 'Quotes' :
-                settings.source === 'codeSnippets' ? 'Code' : 'Literature'
-              }
+              <strong>Source:</strong>{' '}
+              {settings.source === 'custom'
+                ? 'Custom Text'
+                : settings.source === 'randomWords'
+                ? 'Random Words'
+                : settings.source === 'quotes'
+                ? 'Quotes'
+                : settings.source === 'codeSnippets'
+                ? 'Code'
+                : 'Literature'}
             </span>
             {settings.source === 'randomWords' && (
-              <span><strong>Difficulty:</strong> {settings.difficulty}</span>
+              <span>
+                <strong>Difficulty:</strong> {settings.difficulty}
+              </span>
             )}
             {settings.source === 'custom' && settings.customText && (
-              <span className="text-green-400"><strong>Custom text set!</strong></span>
+              <span className="text-green-400">
+                <strong>Custom text set!</strong>
+              </span>
             )}
             <span>
-              <strong>Mode:</strong> {
-                settings.mode === 'timed' ? 'Timed (60s)' :
-                settings.mode === 'untimed' ? 'Untimed' : 'Word Goal'
-              }
+              <strong>Mode:</strong>{' '}
+              {settings.mode === 'timed'
+                ? 'Timed (60s)'
+                : settings.mode === 'untimed'
+                ? 'Untimed'
+                : 'Word Goal'}
             </span>
             {settings.mode === 'wordGoal' && (
-              <span><strong>Target:</strong> {settings.targetWpm} WPM</span>
+              <span>
+                <strong>Target:</strong> {settings.targetWpm} WPM
+              </span>
             )}
           </div>
         </div>
@@ -89,7 +101,7 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
               Text Source
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {['randomWords', 'quotes', 'codeSnippets', 'literature'].map((source) => (
+              {['randomWords', 'quotes', 'codeSnippets', 'literature', 'custom'].map((source) => (
                 <button
                   key={source}
                   onClick={() => handleSettingChange('source', source)}
@@ -99,9 +111,15 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
                       : 'bg-gray-700 text-gray-300 hover:bg-gradient-to-r hover:from-gray-600 hover:to-gray-500 hover:text-white'
                   }`}
                 >
-                  {source === 'randomWords' ? 'Random Words' :
-                   source === 'quotes' ? 'Quotes' :
-                   source === 'codeSnippets' ? 'Code' : 'Literature'}
+                  {source === 'randomWords'
+                    ? 'Random Words'
+                    : source === 'quotes'
+                    ? 'Quotes'
+                    : source === 'codeSnippets'
+                    ? 'Code'
+                    : source === 'literature'
+                    ? 'Literature'
+                    : 'Custom Text'}
                 </button>
               ))}
             </div>
@@ -163,9 +181,7 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
           {/* Goal Setting */}
           {settings.mode === 'wordGoal' && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Target WPM
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Target WPM</label>
               <input
                 type="number"
                 min="10"
@@ -188,10 +204,15 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
                 <div className="flex justify-between items-start gap-3">
                   <div>
                     <p className="text-green-400 font-medium mb-1">✅ Custom text active</p>
-                    <p className="text-gray-300 text-sm">"{settings.customText.substring(0, 100)}..."</p>
+                    <p className="text-gray-300 text-sm">
+                      {/* FIX APPLIED HERE */}
+                      &quot;{settings.customText.substring(0, 100)}...&quot;
+                    </p>
                   </div>
                   <button
-                    onClick={() => onSettingsChange({ ...settings, source: 'randomWords', customText: '' })}
+                    onClick={() =>
+                      onSettingsChange({ ...settings, source: 'randomWords', customText: '' })
+                    }
                     className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded text-sm transition-colors"
                   >
                     Clear

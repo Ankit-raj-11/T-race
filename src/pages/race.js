@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import Timer from '../components/Timer';
@@ -28,10 +28,41 @@ export default function Race() {
   });
   const { user, updateUserScore, saveTypingStat } = useAuth();
 
-  // Fetch random sentence on component mount
+  // Helper function wrapped in useCallback for stability
+  const resetRace = useCallback(() => {
+    setUserInput('');
+    setTimerActive(false);
+    setShowResults(false);
+    setTimerKey((prev) => prev + 1);
+    metricsRef.current = {
+      correctChars: 0,
+      totalChars: 0,
+      mistakes: {},
+      startTime: null,
+      endTime: null
+    };
+  }, [setUserInput, setTimerActive, setShowResults, setTimerKey]);
+
+  // Fetch random sentence wrapped in useCallback for dependency management
+  const fetchNewSentence = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/sentences');
+      const data = await response.json();
+      setSentence(data.sentence);
+      resetRace();
+    } catch (error) {
+      console.error('Failed to fetch sentence:', error);
+      setSentence('Failed to load sentence. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [resetRace]); // fetchNewSentence depends on the stable resetRace function
+
+  // Fetch random sentence on component mount (FIX: Added fetchNewSentence dependency)
   useEffect(() => {
     fetchNewSentence();
-  }, []);
+  }, [fetchNewSentence]);
 
   useEffect(() => {
     if (!loading && inputRef.current) {
@@ -46,35 +77,6 @@ export default function Race() {
       inputRef.current.selectionEnd = userInput.length;
     }
   }, [userInput]);
-
-  const resetRace = () => {
-    setUserInput('');
-    setTimerActive(false);
-    setShowResults(false);
-    setTimerKey((prev) => prev + 1);
-    metricsRef.current = {
-      correctChars: 0,
-      totalChars: 0,
-      mistakes: {},
-      startTime: null,
-      endTime: null
-    };
-  };
-
-  const fetchNewSentence = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/sentences');
-      const data = await response.json();
-      setSentence(data.sentence);
-      resetRace();
-    } catch (error) {
-      console.error('Failed to fetch sentence:', error);
-      setSentence('Failed to load sentence. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleKeyDown = (e) => {
     if (loading) return;
@@ -356,8 +358,8 @@ export default function Race() {
                 Typing Race
               </h1>
               {/* Timer below title - 1 minute countdown. It starts when the user presses
-          the first printable key (timerActive is set to true in handleKeyDown).
-          If the user finishes earlier, we stop the timer and save the elapsed time. */}
+               the first printable key (timerActive is set to true in handleKeyDown).
+               If the user finishes earlier, we stop the timer and save the elapsed time. */}
               <Timer
                 key={timerKey}
                 duration={60}
@@ -410,7 +412,7 @@ export default function Race() {
                       }
                     }}
                     onSelect={() => {
-                      //  caretends if user tries to select text
+                      //  caretends if user tries to select text
                       const el = inputRef.current;
                       if (el) {
                         el.selectionStart = userInput.length;
@@ -442,7 +444,8 @@ export default function Race() {
                 <h4 className="text-lg font-medium mb-2 text-cyan-400">Instructions:</h4>
                 <ul className="text-gray-300 space-y-1">
                   <li>• Type the sentence exactly as shown above</li>
-                  <li>• Click "New Sentence" to practice with different text</li>
+                  {/* FIX APPLIED HERE: Replaced " with &quot; */}
+                  <li>• Click &quot;New Sentence&quot; to practice with different text</li>
                   <li>• Focus on accuracy and speed</li>
                 </ul>
               </div>

@@ -1,8 +1,9 @@
-import React from "react";
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Menu, X, LogOut } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import Image from 'next/image';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -47,13 +48,12 @@ export default function Header() {
             >
               Practice
             </Link>
-            {
-                Router.pathname !== "/race" && (
-                  <Link href="/race">
-                    <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
-                      Get Started
-                    </button>
-                  </Link>
+            {Router.pathname !== '/race' && (
+              <Link href="/race">
+                <button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
+                  Get Started
+                </button>
+              </Link>
             )}
             {/* Signup/Login/Logout/Avatar */}
             {!loading && !user && (
@@ -68,18 +68,23 @@ export default function Header() {
             )}
             {!loading && user && (
               <>
-                <img
-                  src={user.photoURL || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"}
-                  alt={user.displayName || "User"}
-                  className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
+                <Image
+                  src={
+                    user.photoURL ||
+                    'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
+                  }
+                  alt={user.displayName || 'User'}
+                  width={40}
+                  height={40}
+                  className="rounded-full border-3 border-cyan-500 object-cover mr-2"
                   referrerPolicy="no-referrer"
                 />
                 <button
-                    onClick={logout}
-                    className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400"
+                  onClick={logout}
+                  className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400"
                 >
-                    <span className="hidden sm:inline">Logout </span>
-                    <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
+                  <span className="hidden sm:inline">Logout </span>
+                  <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
                 </button>
               </>
             )}
@@ -91,11 +96,7 @@ export default function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
@@ -131,19 +132,17 @@ export default function Header() {
               >
                 Practice
               </Link>
-              {
-                Router.pathname !== "/race" && (
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      Router.push('/race');
-                    }}
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
-                  >
-                    Get Started
-                  </button>
-                )
-              }
+              {Router.pathname !== '/race' && (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    Router.push('/race');
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 w-full"
+                >
+                  Get Started
+                </button>
+              )}
               {/* Signup/Login/Logout/Avatar */}
               {!loading && !user && (
                 <>
@@ -170,22 +169,27 @@ export default function Header() {
               )}
               {!loading && user && (
                 <div className="flex items-center gap-2">
-                  <img
-					src={user.photoURL || "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"}
-					alt={user.displayName || "User"}
-					className="w-10 h-10 rounded-full border-3 border-cyan-500 object-cover mr-2"
-					referrerPolicy="no-referrer"
-					/>
-				  <button
-					  onClick={() => {
-						setIsMenuOpen(false);
-						logout();
-					  }}
-					  className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400 w-full"
-				  >
-					  <span className="hidden sm:inline">Logout </span>
-					  <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
-				  </button>
+                  <Image
+                    src={
+                      user.photoURL ||
+                      'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
+                    }
+                    alt={user.displayName || 'User'}
+                    width={40}
+                    height={40}
+                    className="rounded-full border-3 border-cyan-500 object-cover mr-2"
+                    referrerPolicy="no-referrer"
+                  />
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      logout();
+                    }}
+                    className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400 w-full"
+                  >
+                    <span className="hidden sm:inline">Logout </span>
+                    <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
+                  </button>
                 </div>
               )}
             </div>
@@ -198,9 +202,8 @@ export default function Header() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-            backgroundSize: "40px 40px",
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
           }}
         ></div>
       </div>
