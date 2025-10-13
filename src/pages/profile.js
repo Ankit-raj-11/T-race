@@ -18,17 +18,17 @@ export default function Profile() {
         setLoading(false);
         return;
       }
-      
+
       const statsRef = doc(db, 'userStats', user.uid);
       try {
         const docSnap = await getDoc(statsRef);
         if (docSnap.exists()) {
           setUserStats(docSnap.data());
         } else {
-          console.log("No user stats document found.");
+          console.log('No user stats document found.');
         }
       } catch (error) {
-        console.error("Error fetching user stats:", error);
+        console.error('Error fetching user stats:', error);
       } finally {
         setLoading(false);
       }
@@ -46,13 +46,17 @@ export default function Profile() {
   }
 
   if (!userStats) {
-    return <div className="text-center mt-10">No stats found. Complete a typing test to get started!</div>;
+    return (
+      <div className="text-center mt-10">
+        No stats found. Complete a typing test to get started!
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8">
       <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
-        {user.displayName || 'Your'}'s Profile
+        {user.displayName || 'Your'}&apos;s Profile
       </h1>
 
       <StreakBanner currentStreak={userStats.currentStreak} />
@@ -70,7 +74,6 @@ export default function Profile() {
           <p className="text-gray-400 text-sm mb-2">XP Points</p>
           <p className="text-2xl font-bold text-purple-400">{userStats.xpPoints || 0}</p>
         </div>
-        {/* --- ADDED THIS BLOCK --- */}
         <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
           <p className="text-gray-400 text-sm mb-2">Races Completed</p>
           <p className="text-2xl font-bold text-yellow-400">{userStats.racesCompleted || 0}</p>

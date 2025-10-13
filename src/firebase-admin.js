@@ -42,8 +42,8 @@ const SESSION_TOKEN_NAME = 't-race-session_token';
 export async function saveSession(req, res, idToken) {
   const payload = await admin.auth().verifyIdToken(idToken);
 
-  // Set session expiration to 5 days (in seconds).
-  const maxAge = 60 * 60 * 24 * 5;
+  // Set session expiration to 1 days (in seconds).
+  const maxAge = 60 * 60 * 24 * 1;
   const sessionCookie = await admin.auth().createSessionCookie(idToken, {
     // createSessionCookie expects expiresIn to be specified in ms
     expiresIn: maxAge * 1000,
