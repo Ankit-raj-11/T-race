@@ -3,27 +3,20 @@ import admin from 'firebase-admin';
 import * as cookie from 'cookie';
 
 /**
- * To authenticate a service account and authorize it to access Firebase services,
- * you must generate a private key file in JSON format.
- *
- * To generate a private key file for your service account:
- *
- * 1. In the Firebase console, open Settings > Service Accounts.
- * 2. Click Generate New Private Key, then confirm by clicking Generate Key.
- * 3. Securely store the JSON file containing the key.
- *
- * Use the values inside the JSON file to set FIREBASE_ in .env
+ * Your service account credentials should be stored in environment variables
+ * without the NEXT_PUBLIC_ prefix for server-side code.
  */
 const firebaseAdminConfig = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  // CORRECTED: Removed NEXT_PUBLIC_ prefix
+  projectId: process.env.FIREBASE_PROJECT_ID,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY
+  // CORRECTED: Replaces escaped newlines in the private key
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
 };
 
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(firebaseAdminConfig)
-    // databaseURL
+    credential: admin.credential.cert(firebaseAdminConfig),
   });
 }
 
@@ -35,7 +28,7 @@ function getIdTokenPayload(payload) {
     userId: payload.user_id,
     displayName: payload.name,
     photoURL: payload.picture,
-    email: payload.email
+    email: payload.email,
   };
 }
 
@@ -53,7 +46,7 @@ export async function saveSession(req, res, idToken) {
   const maxAge = 60 * 60 * 24 * 5;
   const sessionCookie = await admin.auth().createSessionCookie(idToken, {
     // createSessionCookie expects expiresIn to be specified in ms
-    expiresIn: maxAge * 1000
+    expiresIn: maxAge * 1000,
   });
 
   // Set cookie policy for session cookie.
@@ -65,7 +58,7 @@ export async function saveSession(req, res, idToken) {
       secure: process.env.NODE_ENV === 'production',
       maxAge,
       path: '/',
-      sameSite: 'Lax'
+      sameSite: 'Lax',
     })
   );
 
@@ -85,7 +78,7 @@ export async function clearSession(req, res) {
       // A date in the past removes the cookie
       expires: new Date(1970, 0, 1),
       path: '/',
-      sameSite: 'Lax'
+      sameSite: 'Lax',
     })
   );
 }

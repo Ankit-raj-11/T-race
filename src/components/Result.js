@@ -1,12 +1,65 @@
-import { AlertCircle, ArrowLeft, RotateCcw } from 'lucide-react';
-import BadgeCollection from './Badge/BadgeCollection';
-import { useAuth } from '../context/AuthContext';
+// src/components/result.js
 
-export default function ShowResults({ stats, onNextRound, onBackHome }) {
+import { useEffect, useState } from 'react';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'; 
+import { db } from '../firebase';
+import { processTestResult } from '../../lib/gamification';
+import { useAuth } from '../context/AuthContext';
+import { AlertCircle, ArrowLeft, RotateCcw, Award, Star } from 'lucide-react';
+
+export default function Results({ stats, onNextRound, onBackHome }) {
   const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars } = stats;
   const { user } = useAuth();
 
-  // get common 5 mistakes
+  const [gamificationUpdate, setGamificationUpdate] = useState(null);
+
+  useEffect(() => {
+    // --- FINAL DEBUGGING LOG ---
+    // Check your BROWSER console for this message on the results page.
+    console.log("Checking user state on Results page:", user);
+
+    if (user && wpm > 0) {
+      const updateUserStats = async () => {
+        console.log("User found, attempting to save stats...");
+        const userStatsRef = doc(db, 'userStats', user.uid);
+        try {
+          const docSnap = await getDoc(userStatsRef);
+          
+          if (docSnap.exists()) {
+            const currentUserStats = docSnap.data();
+            const updatedStats = processTestResult(currentUserStats, wpm);
+            await updateDoc(userStatsRef, updatedStats);
+
+            const newBadges = updatedStats.badges.filter(
+              (b) => !(currentUserStats.badges || []).some((cb) => cb.name === b.name)
+            );
+            const levelUp = updatedStats.skillLevel !== currentUserStats.skillLevel;
+            if (newBadges.length > 0 || levelUp) {
+              setGamificationUpdate({ newBadges, levelUp, newSkill: updatedStats.skillLevel });
+            }
+          } else {
+            console.log("No user stats found. CREATING new document...");
+            const initialStats = processTestResult({}, wpm);
+            await setDoc(userStatsRef, initialStats);
+            console.log("New user stats document CREATED!");
+            setGamificationUpdate({ 
+              newBadges: initialStats.badges, 
+              levelUp: true, 
+              newSkill: initialStats.skillLevel 
+            });
+          }
+        } catch (error) {
+          console.error("Error creating or updating user stats:", error);
+        }
+      };
+
+      updateUserStats();
+    } else {
+      console.log("Skipping stats save: User is not available or WPM is zero.");
+    }
+  }, [user, wpm]);
+
+  // ... (The rest of your component remains the same) ...
   const commonMistakes = Object.entries(mistakes)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
@@ -19,7 +72,6 @@ export default function ShowResults({ stats, onNextRound, onBackHome }) {
 
   return (
     <>
-      {/* Top bar similar to race page */}
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBackHome}
@@ -44,88 +96,59 @@ export default function ShowResults({ stats, onNextRound, onBackHome }) {
         <p className="text-lg text-gray-400">Completed in {formatTime(timeElapsed)}</p>
       </div>
 
-      {/* Stats display */}
       <div className="max-w-4xl mx-auto">
-        {/* Badge Collection Section */}
-        {user && (
-          <div className="my-8">
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-cyan-400 mb-4">Badge Collection</h3>
-              <BadgeCollection showOnlyNearCompletion={false} />
-            </div>
+        {gamificationUpdate && (
+          <div className="my-6 bg-gray-800 border border-purple-500 rounded-lg p-4 text-center">
+            {gamificationUpdate.levelUp && (
+              <div className="flex items-center justify-center gap-2 text-lg text-yellow-400 mb-2">
+                <Star size={20} />
+                <span>You leveled up! New rank: <strong>{gamificationUpdate.newSkill}</strong></span>
+              </div>
+            )}
+            {gamificationUpdate.newBadges.map((badge, i) => (
+              <div key={i} className="flex items-center justify-center gap-2 text-lg text-cyan-400">
+                <Award size={20} />
+                <span>New badge unlocked: <strong>{badge.name}</strong></span>
+              </div>
+            ))}
           </div>
         )}
 
-        <div className="mb-8 space-y-8">
-          {/* WPM */}
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <h2 className="text-2xl font-semibold text-gray-300">Words Per Minute</h2>
-            </div>
-            <div className="text-7xl font-bold text-cyan-400 mb-2">{wpm}</div>
-            <p className="text-gray-500">WPM</p>
-          </div>
-
-          {/* Accuracy */}
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <h2 className="text-2xl font-semibold text-gray-300">Accuracy</h2>
-            </div>
-            <div className="text-7xl font-bold text-emerald-400 mb-2">{accuracy}%</div>
-            <p className="text-gray-500">
-              {correctChars} / {totalChars} characters correct
-            </p>
-          </div>
-
-          {/* Common Mistakes */}
-          {commonMistakes.length > 0 && (
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <AlertCircle className="text-red-400" size={24} />
-                <h2 className="text-2xl font-semibold text-gray-300">Common Mistakes</h2>
-              </div>
-              <div className="flex justify-center gap-6 flex-wrap">
-                {commonMistakes.map(([char, count], idx) => (
-                  <div key={idx} className="text-center">
-                    <div className="text-5xl font-mono text-red-400 mb-2">
-                      {char === ' ' ? '␣' : char}
-                    </div>
-                    <div className="text-sm text-gray-400">{count} mistakes</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {commonMistakes.length === 0 && (
-            <div className="text-center">
-              <div className="text-5xl mb-3">🎯</div>
-              <h2 className="text-2xl font-semibold text-emerald-400 mb-2">Perfect Round!</h2>
-              <p className="text-gray-400">No mistakes detected</p>
-            </div>
-          )}
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-semibold text-gray-300 mb-3">Words Per Minute</h2>
+          <div className="text-7xl font-bold text-cyan-400">{wpm}</div>
         </div>
 
-        {/* Performance Summary */}
-        {/* <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-          <h4 className="text-lg font-medium mb-2 text-cyan-400">Performance Summary:</h4>
-          <ul className="text-gray-300 space-y-1">
-            <li>• You typed at {wpm} words per minute</li>
-            <li>• Your accuracy was {accuracy}%</li>
-            <li>
-              • You correctly typed {correctChars} out of {totalChars} characters
-            </li>
-            {commonMistakes.length > 0 && (
-              <li>
-                • Focus on practicing:{' '}
-                {topMistakes
-                  .slice(0, 3)
-                  .map(([char]) => (char === ' ' ? 'space' : `"${char}"`))
-                  .join(', ')}
-              </li>
-            )}
-          </ul>
-        </div> */}
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl font-semibold text-gray-300 mb-3">Accuracy</h2>
+          <div className="text-7xl font-bold text-emerald-400">{accuracy}%</div>
+          <p className="text-gray-500">{correctChars} / {totalChars} characters correct</p>
+        </div>
+
+        {commonMistakes.length > 0 ? (
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <AlertCircle className="text-red-400" size={24} />
+              <h2 className="text-2xl font-semibold text-gray-300">Common Mistakes</h2>
+            </div>
+            <div className="flex justify-center gap-6 flex-wrap">
+              {commonMistakes.map(([char, count], idx) => (
+                <div key={idx} className="text-center">
+                  <div className="text-5xl font-mono text-red-400 mb-2">
+                    {char === ' ' ? '␣' : char}
+                  </div>
+                  <div className="text-sm text-gray-400">{count} mistakes</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center">
+            <div className="text-5xl mb-3">🎯</div>
+            <h2 className="text-2xl font-semibold text-emerald-400 mb-2">Perfect Round!</h2>
+            <p className="text-gray-400">No mistakes detected</p>
+          </div>
+        )}
       </div>
     </>
   );

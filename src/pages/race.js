@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import Link from "next/link";
 import Timer from "../components/Timer";
+import Results from "../components/result"; // Import the results component
+import Link from 'next/link';
 
 export default function Race() {
   const [sentence, setSentence] = useState("");
@@ -10,6 +12,12 @@ export default function Race() {
   const [timerKey, setTimerKey] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const inputRef = useRef(null);
+
+  // --- NEW: State for managing race completion and stats ---
+  const [raceStatus, setRaceStatus] = useState("in-progress"); // 'in-progress' or 'completed'
+  const [stats, setStats] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const router = useRouter();
 
   // Fetch random sentence on component mount
   useEffect(() => {
@@ -20,7 +28,7 @@ export default function Race() {
     if (!loading && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [loading]);
+  }, [loading, raceStatus]); // Focus input when a new race starts
 
   const fetchNewSentence = async () => {
     setLoading(true);
@@ -28,9 +36,6 @@ export default function Race() {
       const response = await fetch("/api/sentences");
       const data = await response.json();
       setSentence(data.sentence);
-      setUserInput(""); // Reset input when new sentence loads
-      setTimerActive(false);
-      setTimerKey((prev) => prev + 1); // Reset timer by changing key
     } catch (error) {
       console.error("Failed to fetch sentence:", error);
       setSentence("Failed to load sentence. Please try again.");
@@ -39,34 +44,84 @@ export default function Race() {
     }
   };
 
-  const handleInputChange = (e) => {
-    if (!timerActive && e.target.value.length > 0) {
-      setTimerActive(true);
+  const endRace = () => {
+    setTimerActive(false);
+
+    // --- Calculate stats ---
+    const endTime = Date.now();
+    const timeElapsed = (endTime - startTime) / 1000; // in seconds
+
+    let correctChars = 0;
+    let mistakes = {};
+    for (let i = 0; i < userInput.length; i++) {
+      if (i < sentence.length) {
+        if (userInput[i] === sentence[i]) {
+          correctChars++;
+        } else {
+          const char = sentence[i];
+          mistakes[char] = (mistakes[char] || 0) + 1;
+        }
+      }
     }
+    
+    const wpm = timeElapsed > 0 ? Math.round((correctChars / 5) / (timeElapsed / 60)) : 0;
+    const accuracy = sentence.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
 
-    setUserInput(e.target.value);
+    setStats({
+      wpm,
+      accuracy,
+      mistakes,
+      timeElapsed,
+      correctChars,
+      totalChars: sentence.length,
+    });
+    setRaceStatus("completed");
+  };
 
-    // stop timer when user completed sentence
-    if (e.target.value == sentence) {
-      setTimerActive(false);
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    if (!timerActive && value.length > 0) {
+      setTimerActive(true);
+      setStartTime(Date.now()); // Start timer on first keypress
+    }
+    setUserInput(value);
+    if (value.length >= sentence.length) {
+      endRace();
     }
   };
 
-  const handleNewSentence = () => {
+  const handleNextRound = () => {
+    setRaceStatus("in-progress");
+    setUserInput("");
+    setTimerActive(false);
+    setStats(null);
+    setStartTime(null);
+    setTimerKey((prev) => prev + 1); // Reset timer
     fetchNewSentence();
   };
 
+  // --- Conditional Rendering: Show Results or Race ---
+  if (raceStatus === "completed" && stats) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white relative py-8 px-4">
+        <Results
+          stats={stats}
+          onNextRound={handleNextRound}
+          onBackHome={() => router.push("/")}
+        />
+      </div>
+    );
+  }
+
+  // ... (The rest of your component for rendering the race UI)
   const getCharacterStatus = (index) => {
-    if (index >= userInput.length) {
-      return "untyped";
-    }
-    if (userInput[index] === sentence[index]) {
-      return "correct";
-    }
+    if (index >= userInput.length) return "untyped";
+    if (userInput[index] === sentence[index]) return "correct";
     return "incorrect";
   };
 
   const renderSentence = () => {
+    // ... (This function remains exactly the same)
     const chars = sentence.split("");
     const extraChars =
       userInput.length > sentence.length
@@ -135,7 +190,7 @@ export default function Race() {
             <span>Back to Home</span>
           </Link>
           <button
-            onClick={handleNewSentence}
+            onClick={handleNextRound} // Changed from handleNewSentence
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors cursor-pointer"
             disabled={loading}
           >
@@ -153,7 +208,7 @@ export default function Race() {
           <Timer
             key={timerKey}
             duration={60}
-            onFinish={handleNewSentence}
+            onFinish={endRace} // Updated to call endRace
             isActive={timerActive}
           />
         </div>
