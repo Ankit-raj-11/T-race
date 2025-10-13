@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import Timer from "../components/Timer";
 import Results from "../components/Result.js"; // 
+import CountdownAnimation from "../components/CountdownAnimation";
 import Link from 'next/link';
 
 export default function Race() {
@@ -14,9 +15,10 @@ export default function Race() {
   const inputRef = useRef(null);
 
   // --- NEW: State for managing race completion and stats ---
-  const [raceStatus, setRaceStatus] = useState("in-progress"); // 'in-progress' or 'completed'
+  const [raceStatus, setRaceStatus] = useState("waiting"); // 'waiting', 'countdown', 'in-progress' or 'completed'
   const [stats, setStats] = useState(null);
   const [startTime, setStartTime] = useState(null);
+  const [showCountdown, setShowCountdown] = useState(false);
   const router = useRouter();
 
   // Fetch random sentence on component mount
@@ -25,10 +27,10 @@ export default function Race() {
   }, []);
 
   useEffect(() => {
-    if (!loading && inputRef.current) {
+    if (!loading && inputRef.current && raceStatus === "in-progress") {
       inputRef.current.focus();
     }
-  }, [loading, raceStatus]); // Focus input when a new race starts
+  }, [loading, raceStatus]); // Focus input when race is in progress
 
   const fetchNewSentence = async () => {
     setLoading(true);
@@ -80,6 +82,10 @@ export default function Race() {
 
   const handleInputChange = (e) => {
     const value = e.target.value;
+    
+    // Only allow input during in-progress state
+    if (raceStatus !== "in-progress") return;
+    
     if (!timerActive && value.length > 0) {
       setTimerActive(true);
       setStartTime(Date.now()); // Start timer on first keypress
@@ -91,13 +97,31 @@ export default function Race() {
   };
 
   const handleNextRound = () => {
-    setRaceStatus("in-progress");
+    setRaceStatus("waiting");
     setUserInput("");
     setTimerActive(false);
     setStats(null);
     setStartTime(null);
+    setShowCountdown(false);
     setTimerKey((prev) => prev + 1); // Reset timer
     fetchNewSentence();
+  };
+
+  const startRaceCountdown = () => {
+    if (loading || raceStatus !== "waiting") return;
+    setRaceStatus("countdown");
+    setShowCountdown(true);
+  };
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
+    setRaceStatus("in-progress");
+    // Focus input after countdown
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   // --- Conditional Rendering: Show Results or Race ---
@@ -204,13 +228,32 @@ export default function Race() {
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
             Typing Race
           </h1>
-          {/* Timer below title */}
-          <Timer
-            key={timerKey}
-            duration={60}
-            onFinish={endRace} // Updated to call endRace
-            isActive={timerActive}
-          />
+          {/* Timer below title - only show during race */}
+          {raceStatus === "in-progress" && (
+            <Timer
+              key={timerKey}
+              duration={60}
+              onFinish={endRace} // Updated to call endRace
+              isActive={timerActive}
+            />
+          )}
+          
+          {/* Start Race Button - only show when waiting */}
+          {raceStatus === "waiting" && !loading && (
+            <button
+              onClick={startRaceCountdown}
+              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-xl rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-green-500/30 animate-pulse"
+            >
+              🏁 Start Race!
+            </button>
+          )}
+          
+          {/* Race Status Indicator */}
+          {raceStatus === "countdown" && (
+            <div className="text-2xl font-bold text-yellow-400 animate-pulse">
+              🏁 Race Starting...
+            </div>
+          )}
         </div>
 
         {/* Main Content */}
@@ -245,8 +288,8 @@ export default function Race() {
                 type="text"
                 value={userInput}
                 onChange={handleInputChange}
-                placeholder="Start typing the sentence above..."
-                disabled={loading}
+                placeholder={raceStatus === "waiting" ? "Click 'Start Race!' to begin..." : "Start typing the sentence above..."}
+                disabled={loading || raceStatus !== "in-progress"}
                 className="w-full px-0 py-3 bg-transparent text-lg font-mono text-white placeholder-gray-500 border-0 border-b-2 border-gray-600 focus:border-transparent focus:outline-none transition-all duration-300 disabled:opacity-50"
               />
               {/* Neon underline effect */}
@@ -282,6 +325,14 @@ export default function Race() {
           </div>
         </div>
       </div>
+      
+      {/* Countdown Animation Overlay */}
+      <CountdownAnimation
+        isActive={showCountdown}
+        onComplete={handleCountdownComplete}
+        duration={4000}
+        showAnimation={true}
+      />
     </div>
   );
 }
