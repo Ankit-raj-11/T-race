@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import Timer from "../components/Timer";
-import Results from "../components/result"; // Import the results component
+import Results from "../components/Result.js"; // 
 import Link from 'next/link';
 
 export default function Race() {
