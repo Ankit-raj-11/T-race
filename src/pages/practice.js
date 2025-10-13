@@ -5,6 +5,7 @@ import Timer from '../components/Timer';
 import PracticeSettings from '../components/PracticeSettings';
 import TypingFeedback from '../components/TypingFeedback';
 import PerformanceModal from '../components/PerformanceModal';
+import CountdownAnimation from '../components/CountdownAnimation';
 
 export default function Practice() {
   const [settings, setSettings] = useState({
@@ -24,6 +25,8 @@ export default function Practice() {
   const [showSettings, setShowSettings] = useState(true);
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [finalPerformance, setFinalPerformance] = useState(null);
+  const [practiceStatus, setPracticeStatus] = useState('waiting'); // 'waiting', 'countdown', 'active'
+  const [showCountdown, setShowCountdown] = useState(false);
   
   const inputRef = useRef(null);
   const [caretIndex, setCaretIndex] = useState(0);
@@ -85,10 +88,25 @@ export default function Practice() {
     // Always fetch text based on settings when starting practice
     await fetchPracticeTextWithSettings(settingsToUse);
     setShowSettings(false);
+    setPracticeStatus('waiting');
     setIsActive(false); // Don't start timer immediately, let user start typing
     setStartTime(null);
+  };
+
+  const startPracticeCountdown = () => {
+    if (isLoading || practiceStatus !== 'waiting') return;
+    setPracticeStatus('countdown');
+    setShowCountdown(true);
+  };
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
+    setPracticeStatus('active');
+    // Focus input after countdown
     setTimeout(() => {
-      inputRef.current?.focus();
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }, 100);
   };
 
@@ -103,6 +121,8 @@ export default function Practice() {
     setIsActive(false);
     setStartTime(null);
     setUserInput('');
+    setPracticeStatus('waiting');
+    setShowCountdown(false);
     setShowSettings(true);
   };
 
@@ -115,25 +135,22 @@ export default function Practice() {
       setStartTime(null);
       setSessionKey(prev => prev + 1);
       setCaretIndex(0);
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 100);
+      setPracticeStatus('waiting');
+      setShowCountdown(false);
     } else {
       // For non-custom text, fetch new text
       await fetchPracticeText();
       setShowSettings(false);
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 100);
+      setPracticeStatus('waiting');
+      setShowCountdown(false);
     }
   };
 
   const handleInputChange = (e) => {
     const value = e.target.value;
+    
+    // Only allow input during active practice
+    if (practiceStatus !== 'active') return;
     
     // Don't allow typing beyond the text length
     if (value.length > text.length) return;
@@ -305,8 +322,29 @@ export default function Practice() {
                 </div>
               )}
 
-              {/* Timer (only for timed mode) */}
-              {!isLoading && settings.mode === 'timed' && (
+              {/* Start Practice Button - only show when waiting */}
+              {!isLoading && practiceStatus === 'waiting' && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={startPracticeCountdown}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-xl rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/30 animate-pulse"
+                  >
+                    🚀 Start Practice!
+                  </button>
+                </div>
+              )}
+              
+              {/* Practice Status Indicator */}
+              {practiceStatus === 'countdown' && (
+                <div className="text-center mb-6">
+                  <div className="text-2xl font-bold text-yellow-400 animate-pulse">
+                    🚀 Practice Starting...
+                  </div>
+                </div>
+              )}
+
+              {/* Timer (only for timed mode and active practice) */}
+              {!isLoading && settings.mode === 'timed' && practiceStatus === 'active' && (
                 <div className="text-center">
                   <Timer
                     key={sessionKey}
@@ -344,8 +382,8 @@ export default function Practice() {
                     onKeyUp={handleKeyUp}
                     onSelect={handleSelect}
                     onClick={handleClick}
-                    placeholder="Start typing the text above..."
-                    disabled={isLoading || !text}
+                    placeholder={practiceStatus === 'waiting' ? "Click 'Start Practice!' to begin..." : "Start typing the text above..."}
+                    disabled={isLoading || !text || practiceStatus !== 'active'}
                     className="w-full px-6 py-5 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600 rounded-xl text-white font-mono text-lg leading-relaxed placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/20 resize-none transition-all duration-300 shadow-lg"
                     rows="5"
                     spellCheck={false}
@@ -419,6 +457,14 @@ export default function Practice() {
           )}
         </div>
       </div>
+
+      {/* Countdown Animation Overlay */}
+      <CountdownAnimation
+        isActive={showCountdown}
+        onComplete={handleCountdownComplete}
+        duration={4000}
+        showAnimation={true}
+      />
 
       {/* Performance Modal */}
       <PerformanceModal

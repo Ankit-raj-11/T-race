@@ -10,6 +10,14 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If Firebase auth is not available, just set loading to false
+    if (!auth) {
+      console.log('🔧 Auth disabled - Firebase not configured');
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // Save or update user data in MongoDB when they login
@@ -38,14 +46,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
     if (!auth) {
-      throw new Error('Firebase auth is not initialized. Check your environment variables.');
+      console.warn('🔧 Authentication disabled - Firebase not configured');
+      return;
     }
+    const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   };
 
   const logout = async () => {
+    if (!auth) {
+      console.warn('🔧 Authentication disabled - Firebase not configured');
+      return;
+    }
     await signOut(auth);
     try {
       const response = await fetch('/api/auth/logout', {
