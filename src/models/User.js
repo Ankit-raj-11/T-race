@@ -4,53 +4,53 @@ const UserSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   displayName: {
     type: String,
-    required: true,
+    required: true
   },
   photoURL: {
     type: String,
-    default: null,
+    default: null
   },
   gameName: {
     type: String,
-    default: 'T-Race',
+    default: 'T-Race'
   },
   highestScore: {
     type: Number,
-    default: 0,
+    default: 0
   },
   totalGamesPlayed: {
     type: Number,
-    default: 0,
+    default: 0
   },
   totalTimePlayed: {
     type: Number, // in seconds
-    default: 0,
+    default: 0
   },
   lastLogin: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
 // Update the updatedAt field before saving
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

@@ -1,11 +1,11 @@
 // src/pages/profile.js
 
-import { useState, useEffect } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import BadgesDisplay from '../components/Badge/BadgesDisplay';
+import StreakBanner from '../components/StreakBanner';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase';
-import StreakBanner from '../components/StreakBanner';
-import BadgesDisplay from '../components/Badge/BadgesDisplay';
 
 export default function Profile() {
   const { user } = useAuth();

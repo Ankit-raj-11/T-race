@@ -30,20 +30,20 @@ export default async function handler(req, res) {
         highestScore: user.highestScore,
         totalGamesPlayed: user.totalGamesPlayed,
         totalTimePlayed: user.totalTimePlayed,
-        joinedAt: user.createdAt,
+        joinedAt: user.createdAt
       })),
       pagination: {
         total: totalUsers,
         limit,
         offset,
-        hasMore: offset + limit < totalUsers,
+        hasMore: offset + limit < totalUsers
       }
     });
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Internal server error',
-      error: error.message 
+      error: error.message
     });
   }
 }

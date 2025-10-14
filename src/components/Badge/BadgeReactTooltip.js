@@ -1,10 +1,10 @@
+import { Lock, Target, Trophy } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
-import { Lock, Target, Trophy } from 'lucide-react';
 
 /**
- * ReactTooltip component for badge tooltips
- * Provides accessible tooltips for locked badges with custom styling
+ * ReactTooltip component for badge tooltips Provides accessible tooltips for locked badges with
+ * custom styling
  */
 export default function BadgeReactTooltip() {
   // Handle escape key to close tooltip and return focus to trigger element

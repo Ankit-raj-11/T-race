@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Trophy, Filter, Grid, List, Search } from 'lucide-react';
+import { Filter, Grid, List, Search, Trophy } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 import Badge from './Badge';
 import BadgeReactTooltip from './BadgeReactTooltip';
 

@@ -1,8 +1,8 @@
 // pages/api/users/create-or-update.js
 
+import { saveSession } from '../../../firebase-admin';
 import dbConnect from '../../../lib/db';
 import User from '../../../models/User';
-import { saveSession } from '../../../firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

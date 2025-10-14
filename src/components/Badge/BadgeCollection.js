@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Award, Lock } from 'lucide-react';
 import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
+import { Award, Lock } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import BadgeShowcase from './BadgeShowcase';
 
 export default function BadgeCollection({ showOnlyNearCompletion = false }) {

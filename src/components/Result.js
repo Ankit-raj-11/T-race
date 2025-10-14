@@ -1,11 +1,11 @@
 // src/components/result.js
 
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { AlertCircle, ArrowLeft, Award, RotateCcw, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'; 
-import { db } from '../firebase';
 import { processTestResult } from '../../lib/gamification';
 import { useAuth } from '../context/AuthContext';
-import { AlertCircle, ArrowLeft, RotateCcw, Award, Star } from 'lucide-react';
+import { db } from '../firebase';
 
 export default function Results({ stats, onNextRound, onBackHome }) {
   const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars } = stats;
@@ -16,15 +16,15 @@ export default function Results({ stats, onNextRound, onBackHome }) {
   useEffect(() => {
     // --- FINAL DEBUGGING LOG ---
     // Check your BROWSER console for this message on the results page.
-    console.log("Checking user state on Results page:", user);
+    console.log('Checking user state on Results page:', user);
 
     if (user && wpm > 0) {
       const updateUserStats = async () => {
-        console.log("User found, attempting to save stats...");
+        console.log('User found, attempting to save stats...');
         const userStatsRef = doc(db, 'userStats', user.uid);
         try {
           const docSnap = await getDoc(userStatsRef);
-          
+
           if (docSnap.exists()) {
             const currentUserStats = docSnap.data();
             const updatedStats = processTestResult(currentUserStats, wpm);
@@ -38,24 +38,24 @@ export default function Results({ stats, onNextRound, onBackHome }) {
               setGamificationUpdate({ newBadges, levelUp, newSkill: updatedStats.skillLevel });
             }
           } else {
-            console.log("No user stats found. CREATING new document...");
+            console.log('No user stats found. CREATING new document...');
             const initialStats = processTestResult({}, wpm);
             await setDoc(userStatsRef, initialStats);
-            console.log("New user stats document CREATED!");
-            setGamificationUpdate({ 
-              newBadges: initialStats.badges, 
-              levelUp: true, 
-              newSkill: initialStats.skillLevel 
+            console.log('New user stats document CREATED!');
+            setGamificationUpdate({
+              newBadges: initialStats.badges,
+              levelUp: true,
+              newSkill: initialStats.skillLevel
             });
           }
         } catch (error) {
-          console.error("Error creating or updating user stats:", error);
+          console.error('Error creating or updating user stats:', error);
         }
       };
 
       updateUserStats();
     } else {
-      console.log("Skipping stats save: User is not available or WPM is zero.");
+      console.log('Skipping stats save: User is not available or WPM is zero.');
     }
   }, [user, wpm]);
 
@@ -102,13 +102,17 @@ export default function Results({ stats, onNextRound, onBackHome }) {
             {gamificationUpdate.levelUp && (
               <div className="flex items-center justify-center gap-2 text-lg text-yellow-400 mb-2">
                 <Star size={20} />
-                <span>You leveled up! New rank: <strong>{gamificationUpdate.newSkill}</strong></span>
+                <span>
+                  You leveled up! New rank: <strong>{gamificationUpdate.newSkill}</strong>
+                </span>
               </div>
             )}
             {gamificationUpdate.newBadges.map((badge, i) => (
               <div key={i} className="flex items-center justify-center gap-2 text-lg text-cyan-400">
                 <Award size={20} />
-                <span>New badge unlocked: <strong>{badge.name}</strong></span>
+                <span>
+                  New badge unlocked: <strong>{badge.name}</strong>
+                </span>
               </div>
             ))}
           </div>
@@ -122,7 +126,9 @@ export default function Results({ stats, onNextRound, onBackHome }) {
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-semibold text-gray-300 mb-3">Accuracy</h2>
           <div className="text-7xl font-bold text-emerald-400">{accuracy}%</div>
-          <p className="text-gray-500">{correctChars} / {totalChars} characters correct</p>
+          <p className="text-gray-500">
+            {correctChars} / {totalChars} characters correct
+          </p>
         </div>
 
         {commonMistakes.length > 0 ? (
