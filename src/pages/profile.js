@@ -1,11 +1,7 @@
-// src/pages/profile.js
-
-import { doc, getDoc } from 'firebase/firestore';
+import BadgesDisplay from '@/components/Badge/BadgesDisplay';
+import StreakBanner from '@/components/StreakBanner';
+import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import BadgesDisplay from '../components/Badge/BadgesDisplay';
-import StreakBanner from '../components/StreakBanner';
-import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -19,14 +15,10 @@ export default function Profile() {
         return;
       }
 
-      const statsRef = doc(db, 'userStats', user.uid);
       try {
-        const docSnap = await getDoc(statsRef);
-        if (docSnap.exists()) {
-          setUserStats(docSnap.data());
-        } else {
-          console.log('No user stats document found.');
-        }
+        const response = await fetch('/api/badges/user-stat');
+        const data = await response.json();
+        setUserStats(data.stat);
       } catch (error) {
         console.error('Error fetching user stats:', error);
       } finally {

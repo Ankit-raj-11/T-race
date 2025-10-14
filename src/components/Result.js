@@ -1,11 +1,7 @@
-// src/components/result.js
-
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '@/context/AuthContext';
+import { processTestResult } from '@/lib/gamification';
 import { AlertCircle, ArrowLeft, Award, RotateCcw, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { processTestResult } from '../../lib/gamification';
-import { useAuth } from '../context/AuthContext';
-import { db } from '../firebase';
 
 export default function Results({ stats, onNextRound, onBackHome }) {
   const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars } = stats;
@@ -14,38 +10,20 @@ export default function Results({ stats, onNextRound, onBackHome }) {
   const [gamificationUpdate, setGamificationUpdate] = useState(null);
 
   useEffect(() => {
-    // --- FINAL DEBUGGING LOG ---
-    // Check your BROWSER console for this message on the results page.
-    console.log('Checking user state on Results page:', user);
-
     if (user && wpm > 0) {
       const updateUserStats = async () => {
-        console.log('User found, attempting to save stats...');
-        const userStatsRef = doc(db, 'userStats', user.uid);
         try {
-          const docSnap = await getDoc(userStatsRef);
-
-          if (docSnap.exists()) {
-            const currentUserStats = docSnap.data();
-            const updatedStats = processTestResult(currentUserStats, wpm);
-            await updateDoc(userStatsRef, updatedStats);
-
-            const newBadges = updatedStats.badges.filter(
-              (b) => !(currentUserStats.badges || []).some((cb) => cb.name === b.name)
-            );
-            const levelUp = updatedStats.skillLevel !== currentUserStats.skillLevel;
-            if (newBadges.length > 0 || levelUp) {
-              setGamificationUpdate({ newBadges, levelUp, newSkill: updatedStats.skillLevel });
-            }
-          } else {
-            console.log('No user stats found. CREATING new document...');
-            const initialStats = processTestResult({}, wpm);
-            await setDoc(userStatsRef, initialStats);
-            console.log('New user stats document CREATED!');
+          const response = await fetch('/api/badges/user-stat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ wpm })
+          });
+          const data = await response.json();
+          if (data.newBadges.length > 0 || data.levelUp) {
             setGamificationUpdate({
-              newBadges: initialStats.badges,
-              levelUp: true,
-              newSkill: initialStats.skillLevel
+              newBadges: data.newBadges,
+              levelUp: data.levelUp,
+              newSkill: data.stat.skillLevel
             });
           }
         } catch (error) {

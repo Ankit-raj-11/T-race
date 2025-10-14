@@ -1,5 +1,3 @@
-// lib/gamification.js
-
 // --- 🎯 Achievements & Badges Data ---
 export const WPM_BADGES = {
   20: { name: '🎈 Warm-Up Starter', icon: '🎈' },
@@ -39,9 +37,9 @@ const isConsecutiveDay = (date1, date2) => {
 /**
  * Processes a new typing test result and returns updated user stats.
  *
- * @param {object} currentUserStats - The user's current stats from Firestore.
+ * @param {object} currentUserStats - The user's current stats
  * @param {number} newWpm - The WPM from the latest typing test.
- * @returns {object} - The new, updated stats object to be saved to Firestore.
+ * @returns {object} - The new, updated stats object to be saved in db
  */
 export const processTestResult = (currentUserStats, newWpm) => {
   const today = new Date();
@@ -51,7 +49,7 @@ export const processTestResult = (currentUserStats, newWpm) => {
   newStats.racesCompleted = (currentUserStats.racesCompleted || 0) + 1;
 
   // --- 🔥 Streaks Logic ---
-  const lastTestDate = currentUserStats.lastTestDate?.toDate(); // Convert Firestore Timestamp to JS Date
+  const lastTestDate = new Date(currentUserStats.lastTestDate);
   if (
     lastTestDate &&
     isConsecutiveDay(lastTestDate, today) &&

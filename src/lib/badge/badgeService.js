@@ -1,7 +1,9 @@
-import TypingStat from '../../models/TypingStat';
-import User from '../../models/User';
-import UserBadge from '../../models/UserBadge';
-import dbConnect from '../db';
+import dbConnect from '@/lib/db';
+import { processTestResult } from '@/lib/gamification';
+import TypingStat from '@/models/TypingStat';
+import User from '@/models/User';
+import UserBadge from '@/models/UserBadge';
+import UserStat from '@/models/UserStat';
 import { BADGE_COLLECTION } from './badgeCollection';
 
 /** Badge criteria evaluation service Handles achievement detection and badge unlocking */
@@ -385,6 +387,59 @@ class BadgeService {
     } catch (error) {
       console.error('Error marking badges as viewed:', error);
       throw new Error(`Failed to mark badges as viewed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Gets user's achievement statistics
+   *
+   * @param {string} userId - User ID
+   * @returns {Promise<Object>} Achievement data
+   */
+  async getUserStat(userId) {
+    try {
+      await dbConnect();
+
+      const stat = await UserStat.findOne({ userId })
+        // Don't return the version control
+        .select('-__v')
+        // Prevents direct modification to document
+        .lean();
+      return stat ?? {};
+    } catch (error) {
+      console.error('Error getting user stat progress:', error);
+      throw new Error(`Failed to get user stat progress: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update user's achievement statistics
+   *
+   * @param {string} userId - User ID
+   * @param {object} wpm - Latest wpm
+   * @returns {Promise<Object>} Achievement data + gamification states
+   */
+  async updateUserStat(userId, wpm) {
+    try {
+      await dbConnect();
+
+      const curStat = await this.getUserStat(userId);
+      const newStat = processTestResult(curStat, wpm);
+      await UserStat.updateOne(
+        { userId },
+        { $set: newStat },
+        // Creates document if it doesn't exist
+        { upsert: true }
+      );
+
+      const levelUp = newStat.skillLevel !== curStat.skillLevel;
+      const newBadges = newStat.badges.filter(
+        (b) => !(curStat.badges ?? []).some((cb) => cb.name === b.name)
+      );
+      return { stat: newStat, levelUp, newBadges };
+    } catch (error) {
+      console.error('Error getting user stat progress:', error);
+      throw new Error(`Failed to get user stat progress: ${error.message}`);
     }
   }
 }
