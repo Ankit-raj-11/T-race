@@ -1,20 +1,20 @@
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/router";
-import { ArrowLeft, RotateCcw } from "lucide-react";
-import Timer from "../components/Timer";
-import Results from "../components/Result.js"; // 
+import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useRef, useState } from 'react';
+import Results from '../components/Result.js'; //
+import Timer from '../components/Timer';
 
 export default function Race() {
-  const [sentence, setSentence] = useState("");
-  const [userInput, setUserInput] = useState("");
+  const [sentence, setSentence] = useState('');
+  const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [timerKey, setTimerKey] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const inputRef = useRef(null);
 
   // --- NEW: State for managing race completion and stats ---
-  const [raceStatus, setRaceStatus] = useState("in-progress"); // 'in-progress' or 'completed'
+  const [raceStatus, setRaceStatus] = useState('in-progress'); // 'in-progress' or 'completed'
   const [stats, setStats] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const router = useRouter();
@@ -33,12 +33,12 @@ export default function Race() {
   const fetchNewSentence = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/sentences");
+      const response = await fetch('/api/sentences');
       const data = await response.json();
       setSentence(data.sentence);
     } catch (error) {
-      console.error("Failed to fetch sentence:", error);
-      setSentence("Failed to load sentence. Please try again.");
+      console.error('Failed to fetch sentence:', error);
+      setSentence('Failed to load sentence. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -63,8 +63,8 @@ export default function Race() {
         }
       }
     }
-    
-    const wpm = timeElapsed > 0 ? Math.round((correctChars / 5) / (timeElapsed / 60)) : 0;
+
+    const wpm = timeElapsed > 0 ? Math.round(correctChars / 5 / (timeElapsed / 60)) : 0;
     const accuracy = sentence.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
 
     setStats({
@@ -73,9 +73,9 @@ export default function Race() {
       mistakes,
       timeElapsed,
       correctChars,
-      totalChars: sentence.length,
+      totalChars: sentence.length
     });
-    setRaceStatus("completed");
+    setRaceStatus('completed');
   };
 
   const handleInputChange = (e) => {
@@ -91,8 +91,8 @@ export default function Race() {
   };
 
   const handleNextRound = () => {
-    setRaceStatus("in-progress");
-    setUserInput("");
+    setRaceStatus('in-progress');
+    setUserInput('');
     setTimerActive(false);
     setStats(null);
     setStartTime(null);
@@ -101,63 +101,54 @@ export default function Race() {
   };
 
   // --- Conditional Rendering: Show Results or Race ---
-  if (raceStatus === "completed" && stats) {
+  if (raceStatus === 'completed' && stats) {
     return (
       <div className="min-h-screen bg-gray-900 text-white relative py-8 px-4">
-        <Results
-          stats={stats}
-          onNextRound={handleNextRound}
-          onBackHome={() => router.push("/")}
-        />
+        <Results stats={stats} onNextRound={handleNextRound} onBackHome={() => router.push('/')} />
       </div>
     );
   }
 
   // ... (The rest of your component for rendering the race UI)
   const getCharacterStatus = (index) => {
-    if (index >= userInput.length) return "untyped";
-    if (userInput[index] === sentence[index]) return "correct";
-    return "incorrect";
+    if (index >= userInput.length) return 'untyped';
+    if (userInput[index] === sentence[index]) return 'correct';
+    return 'incorrect';
   };
 
   const renderSentence = () => {
     // ... (This function remains exactly the same)
-    const chars = sentence.split("");
-    const extraChars =
-      userInput.length > sentence.length
-        ? userInput.slice(sentence.length)
-        : "";
+    const chars = sentence.split('');
+    const extraChars = userInput.length > sentence.length ? userInput.slice(sentence.length) : '';
 
     return (
       <div className="text-lg leading-relaxed font-mono flex flex-wrap">
         {chars.map((char, index) => {
           const status = getCharacterStatus(index);
-          let colorClass = "text-white";
+          let colorClass = 'text-white';
 
-          if (status === "correct") {
-            colorClass = "text-emerald-400";
-          } else if (status === "incorrect") {
-            colorClass = "text-red-300 bg-red-500/20 rounded px-0.5";
+          if (status === 'correct') {
+            colorClass = 'text-emerald-400';
+          } else if (status === 'incorrect') {
+            colorClass = 'text-red-300 bg-red-500/20 rounded px-0.5';
           }
 
           const isCurrentChar = index === userInput.length;
-          const cursorClass = isCurrentChar ? "border-l-2 border-cyan-400" : "";
+          const cursorClass = isCurrentChar ? 'border-l-2 border-cyan-400' : '';
 
           return (
             <span
               key={index}
-              className={`${colorClass} ${cursorClass} ${
-                char === " " ? "mx-0.5" : ""
-              }`}
+              className={`${colorClass} ${cursorClass} ${char === ' ' ? 'mx-0.5' : ''}`}
             >
-              {char === " " ? "\u00A0" : char}
+              {char === ' ' ? '\u00A0' : char}
             </span>
           );
         })}
         {extraChars && (
           <span className="text-red-400 bg-red-400/30 rounded px-1 border-b-2 border-red-500">
-            {extraChars.split("").map((char, i) => (
-              <span key={`extra-${i}`}>{char === " " ? "\u00A0" : char}</span>
+            {extraChars.split('').map((char, i) => (
+              <span key={`extra-${i}`}>{char === ' ' ? '\u00A0' : char}</span>
             ))}
           </span>
         )}
@@ -174,7 +165,7 @@ export default function Race() {
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)",
+              'radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.1) 0%, transparent 50%)'
           }}
         ></div>
       </div>
@@ -224,9 +215,7 @@ export default function Race() {
               {loading ? (
                 <div className="flex items-center justify-center w-full">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
-                  <span className="ml-3 text-gray-400">
-                    Loading sentence...
-                  </span>
+                  <span className="ml-3 text-gray-400">Loading sentence...</span>
                 </div>
               ) : (
                 renderSentence()
@@ -236,9 +225,7 @@ export default function Race() {
 
           {/* Typing Input Field with Neon Underline */}
           <div className="mb-8">
-            <h3 className="text-lg font-medium mb-3 text-gray-300">
-              Start typing here:
-            </h3>
+            <h3 className="text-lg font-medium mb-3 text-gray-300">Start typing here:</h3>
             <div className="relative group">
               <input
                 ref={inputRef}
@@ -259,24 +246,19 @@ export default function Race() {
                 Progress: {userInput.length} / {sentence.length} characters
               </span>
               <span>
-                Words:{" "}
-                {userInput.split(" ").filter((word) => word.length > 0).length}{" "}
-                / {sentence.split(" ").length}
+                Words: {userInput.split(' ').filter((word) => word.length > 0).length} /{' '}
+                {sentence.split(' ').length}
               </span>
             </div>
           </div>
 
           {/* Instructions */}
           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
-            <h4 className="text-lg font-medium mb-2 text-cyan-400">
-              Instructions:
-            </h4>
+            <h4 className="text-lg font-medium mb-2 text-cyan-400">Instructions:</h4>
             <ul className="text-gray-300 space-y-1">
               <li>• Type the sentence exactly as shown above</li>
               {/* FIX APPLIED HERE */}
-              <li>
-                • Click &quot;New Sentence&quot; to practice with different text
-              </li>
+              <li>• Click &quot;New Sentence&quot; to practice with different text</li>
               <li>• Focus on accuracy and speed</li>
             </ul>
           </div>

@@ -1,7 +1,7 @@
-import dbConnect from '@/lib/db';
-import TypingStat from '@/models/TypingStat';
 import { getSession } from '@/firebase-admin';
 import badgeService from '@/lib/badge/badgeService';
+import dbConnect from '@/lib/db';
+import TypingStat from '@/models/TypingStat';
 
 export default async function handler(req, res) {
   const { userId } = await getSession(req, res);

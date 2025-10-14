@@ -1,5 +1,5 @@
+import { Clock, Settings, Target, Type } from 'lucide-react';
 import { useState } from 'react';
-import { Settings, Target, Clock, Type } from 'lucide-react';
 
 export default function PracticeSettings({ settings, onSettingsChange, onStartPractice }) {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -58,12 +58,12 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
               {settings.source === 'custom'
                 ? 'Custom Text'
                 : settings.source === 'randomWords'
-                ? 'Random Words'
-                : settings.source === 'quotes'
-                ? 'Quotes'
-                : settings.source === 'codeSnippets'
-                ? 'Code'
-                : 'Literature'}
+                  ? 'Random Words'
+                  : settings.source === 'quotes'
+                    ? 'Quotes'
+                    : settings.source === 'codeSnippets'
+                      ? 'Code'
+                      : 'Literature'}
             </span>
             {settings.source === 'randomWords' && (
               <span>
@@ -80,8 +80,8 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
               {settings.mode === 'timed'
                 ? 'Timed (60s)'
                 : settings.mode === 'untimed'
-                ? 'Untimed'
-                : 'Word Goal'}
+                  ? 'Untimed'
+                  : 'Word Goal'}
             </span>
             {settings.mode === 'wordGoal' && (
               <span>
@@ -114,12 +114,12 @@ export default function PracticeSettings({ settings, onSettingsChange, onStartPr
                   {source === 'randomWords'
                     ? 'Random Words'
                     : source === 'quotes'
-                    ? 'Quotes'
-                    : source === 'codeSnippets'
-                    ? 'Code'
-                    : source === 'literature'
-                    ? 'Literature'
-                    : 'Custom Text'}
+                      ? 'Quotes'
+                      : source === 'codeSnippets'
+                        ? 'Code'
+                        : source === 'literature'
+                          ? 'Literature'
+                          : 'Custom Text'}
                 </button>
               ))}
             </div>

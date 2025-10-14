@@ -1,5 +1,5 @@
-import { ArrowRight, Zap, Trophy, Users, Target } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, Target, Trophy, Users, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -13,7 +13,7 @@ export default function Home() {
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.15) 0%, transparent 50%)",
+                'radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.15) 0%, transparent 50%)'
             }}
           ></div>
         </div>
@@ -26,8 +26,8 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-              Challenge yourself in the ultimate typing speed competition. Race
-              against time and climb the leaderboard!
+              Challenge yourself in the ultimate typing speed competition. Race against time and
+              climb the leaderboard!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -37,10 +37,7 @@ export default function Home() {
               >
                 <Zap size={24} />
                 <span>Start Racing</span>
-                <ArrowRight
-                  size={20}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
@@ -67,13 +64,11 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Target size={32} className="text-white" />
               </div>
-              <Link href="/practice"
-               className="text-xl font-semibold mb-3 text-cyan-400">
+              <Link href="/practice" className="text-xl font-semibold mb-3 text-cyan-400">
                 Practice Mode
               </Link>
               <p className="text-gray-300">
-                Improve your typing accuracy with our advanced real-time
-                feedback system
+                Improve your typing accuracy with our advanced real-time feedback system
               </p>
             </div>
 
@@ -81,12 +76,9 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-purple-400">
-                Speed Boost
-              </h3>
+              <h3 className="text-xl font-semibold mb-3 text-purple-400">Speed Boost</h3>
               <p className="text-gray-300">
-                Track your WPM progress and watch your typing speed soar to new
-                heights
+                Track your WPM progress and watch your typing speed soar to new heights
               </p>
             </div>
 
@@ -94,12 +86,9 @@ export default function Home() {
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-green-400">
-                Global Competition
-              </h3>
+              <h3 className="text-xl font-semibold mb-3 text-green-400">Global Competition</h3>
               <p className="text-gray-300">
-                Compete with typists worldwide and earn your place on the global
-                leaderboard
+                Compete with typists worldwide and earn your place on the global leaderboard
               </p>
             </div>
           </div>
@@ -109,12 +98,10 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Race?
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Race?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of users improving their typing skills every day.
-            Start your journey to becoming a typing champion!
+            Join thousands of users improving their typing skills every day. Start your journey to
+            becoming a typing champion!
           </p>
           <Link
             href="/race"

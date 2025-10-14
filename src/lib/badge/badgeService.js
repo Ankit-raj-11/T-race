@@ -1,16 +1,14 @@
-import dbConnect from '../db';
-import UserBadge from '../../models/UserBadge';
-import User from '../../models/User';
 import TypingStat from '../../models/TypingStat';
+import User from '../../models/User';
+import UserBadge from '../../models/UserBadge';
+import dbConnect from '../db';
 import { BADGE_COLLECTION } from './badgeCollection';
 
-/**
- * Badge criteria evaluation service
- * Handles achievement detection and badge unlocking
- */
+/** Badge criteria evaluation service Handles achievement detection and badge unlocking */
 class BadgeService {
   /**
    * Evaluates user performance against all badge criteria
+   *
    * @param {string} userId - User ID
    * @param {Object} sessionData - Current session performance data
    * @param {number} sessionData.wpm - Words per minute
@@ -65,6 +63,7 @@ class BadgeService {
 
   /**
    * Evaluates a single badge's criteria against user performance
+   *
    * @param {string} userId - User ID
    * @param {Object} badge - Badge document
    * @param {Object} sessionData - Current session performance data
@@ -103,9 +102,7 @@ class BadgeService {
     }
   }
 
-  /**
-   * Evaluates WPM-based criteria
-   */
+  /** Evaluates WPM-based criteria */
   evaluateWpmCriteria(criteria, sessionData) {
     const { wpm } = sessionData;
     const { threshold, condition } = criteria;
@@ -131,9 +128,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates accuracy-based criteria
-   */
+  /** Evaluates accuracy-based criteria */
   evaluateAccuracyCriteria(criteria, sessionData) {
     const { accuracy } = sessionData;
     const { threshold, condition } = criteria;
@@ -159,9 +154,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates games played criteria
-   */
+  /** Evaluates games played criteria */
   async evaluateGamesPlayedCriteria(userId, criteria) {
     const user = await User.findOne({ userId });
     if (!user) {
@@ -192,9 +185,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates streak-based criteria (consecutive achievements)
-   */
+  /** Evaluates streak-based criteria (consecutive achievements) */
   async evaluateStreakCriteria(userId, criteria, sessionData) {
     const { threshold, condition } = criteria;
 
@@ -252,9 +243,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates time played criteria
-   */
+  /** Evaluates time played criteria */
   async evaluateTimePlayedCriteria(userId, criteria) {
     const user = await User.findOne({ userId });
     if (!user) {
@@ -288,6 +277,7 @@ class BadgeService {
 
   /**
    * Unlocks badges for a user and updates user statistics
+   *
    * @param {string} userId - User ID
    * @param {string[]} badgeIds - Array of badge IDs to unlock
    */
@@ -322,6 +312,7 @@ class BadgeService {
 
   /**
    * Gets user's badge progress for all available badges
+   *
    * @param {string} userId - User ID
    * @returns {Promise<Object>} Badge progress data
    */
@@ -366,6 +357,7 @@ class BadgeService {
 
   /**
    * Marks badges as viewed to prevent repeated celebration animations
+   *
    * @param {string} userId - User ID
    * @param {string[]} badgeIds - Array of badge IDs to mark as viewed
    * @returns {Promise<void>}

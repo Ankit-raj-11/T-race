@@ -1,20 +1,19 @@
 /**
  * A list of all possible badges available to grab
  *
- * - badgeId: a unique Id for each badge
- * - name: display name
- * - description: description of the badge
- * - iconUrl: a custom image URL for the badge icon (default is a gold trophy)
- * - category: 'speed', 'accuracy', 'consistency', 'milestone'
- * - criteria: an object describing how to obtain badge
- *   ```
- *   {
- *      type: 'wpm', 'accuracy', 'games_played', 'streak', 'time_played'
- *      condition: '>=', '==', 'consecutive'
- *      threshold: value to satisfy condition
- *   }
- *   ```
- * - rarity: 'common', 'rare', 'epic', 'legendary'
+ * - BadgeId: a unique Id for each badge
+ * - Name: display name
+ * - Description: description of the badge
+ * - IconUrl: a custom image URL for the badge icon (default is a gold trophy)
+ * - Category: 'speed', 'accuracy', 'consistency', 'milestone'
+ * - Criteria: an object describing how to obtain badge
+ *
+ *       {
+ *          type: 'wpm', 'accuracy', 'games_played', 'streak', 'time_played'
+ *          condition: '>=', '==', 'consecutive'
+ *          threshold: value to satisfy condition
+ *       }
+ * - Rarity: 'common', 'rare', 'epic', 'legendary'
  */
 export const BADGE_COLLECTION = [
   {

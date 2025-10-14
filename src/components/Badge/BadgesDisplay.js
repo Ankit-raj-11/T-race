@@ -9,7 +9,11 @@ export default function BadgesDisplay({ badges }) {
       <h3>🏆 Badges</h3>
       <div className="badges-grid">
         {badges.map((badge, index) => (
-          <div key={index} className="badge" title={`Earned on: ${new Date(badge.dateEarned.seconds * 1000).toLocaleDateString()}`}>
+          <div
+            key={index}
+            className="badge"
+            title={`Earned on: ${new Date(badge.dateEarned.seconds * 1000).toLocaleDateString()}`}
+          >
             <span className="badge-icon">{badge.icon}</span>
             <span className="badge-name">{badge.name}</span>
           </div>

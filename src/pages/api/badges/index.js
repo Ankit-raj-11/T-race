@@ -1,11 +1,9 @@
-import dbConnect from '@/lib/db';
 import { getSession } from '@/firebase-admin';
 import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
 import badgeService from '@/lib/badge/badgeService';
+import dbConnect from '@/lib/db';
 
-/**
- * Get user's badge progress for all available badges
- */
+/** Get user's badge progress for all available badges */
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });

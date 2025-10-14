@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
 import { Lock } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Hook to detect reduced motion preference
 function useReducedMotion() {
@@ -27,9 +27,7 @@ export default function Badge({
   isNewlyUnlocked = false,
   progress,
   animationEnabled = true,
-  /**
-   * When isNewlyUnlocked animation completes, this will be called
-   */
+  /** When isNewlyUnlocked animation completes, this will be called */
   onAnimationComplete,
   onClick
 }) {
@@ -157,8 +155,8 @@ export default function Badge({
               !isUnlocked
                 ? 'grayscale opacity-40 brightness-75'
                 : isHovered && shouldAnimate
-                ? 'brightness-110 drop-shadow-lg'
-                : 'brightness-100'
+                  ? 'brightness-110 drop-shadow-lg'
+                  : 'brightness-100'
             }`}
           />
         ) : (
@@ -197,10 +195,10 @@ export default function Badge({
               ? badge.rarity === 'legendary'
                 ? 'bg-yellow-500/30 text-yellow-300 shadow-sm shadow-yellow-400/20'
                 : badge.rarity === 'epic'
-                ? 'bg-purple-500/30 text-purple-300 shadow-sm shadow-purple-400/20'
-                : badge.rarity === 'rare'
-                ? 'bg-blue-500/30 text-blue-300 shadow-sm shadow-blue-400/20'
-                : 'bg-gray-500/30 text-gray-300 shadow-sm shadow-gray-400/20'
+                  ? 'bg-purple-500/30 text-purple-300 shadow-sm shadow-purple-400/20'
+                  : badge.rarity === 'rare'
+                    ? 'bg-blue-500/30 text-blue-300 shadow-sm shadow-blue-400/20'
+                    : 'bg-gray-500/30 text-gray-300 shadow-sm shadow-gray-400/20'
               : 'bg-gray-700/20 text-gray-600 opacity-50'
           } ${isHovered && isUnlocked && shouldAnimate ? 'brightness-125 shadow-md' : ''}`}
         >

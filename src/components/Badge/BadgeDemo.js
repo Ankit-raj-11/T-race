@@ -1,7 +1,7 @@
+import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
+import { Filter, Grid, List, Search, Trophy } from 'lucide-react';
 import React, { useState } from 'react';
 import BadgeShowcase from './BadgeShowcase';
-import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
-import { Trophy, Filter, Grid, List, Search } from 'lucide-react';
 
 // Sample user badges progress
 const sampleUserBadges = {
@@ -147,10 +147,10 @@ export default function BadgeDemo() {
                     badge.rarity === 'legendary'
                       ? 'bg-yellow-600 hover:bg-yellow-500 text-white'
                       : badge.rarity === 'epic'
-                      ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                      : badge.rarity === 'rare'
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-gray-600 hover:bg-gray-500 text-white'
+                        ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                        : badge.rarity === 'rare'
+                          ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                          : 'bg-gray-600 hover:bg-gray-500 text-white'
                   }`}
                 >
                   Unlock {badge.name}
