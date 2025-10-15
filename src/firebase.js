@@ -1,8 +1,5 @@
-// src/firebase.js
-
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'; // <-- 1. ADD THIS IMPORT
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,9 +13,5 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app); // <-- 2. ADD THIS LINE TO INITIALIZE DB
 
-// This log helps confirm that the db object was created successfully.
-console.log('✅ Firebase DB object initialized in firebase.js:', db ? 'Success' : 'Failed');
-
-export { app, auth, db }; // <-- 3. ADD `db` TO THE EXPORT
+export { app, auth };
