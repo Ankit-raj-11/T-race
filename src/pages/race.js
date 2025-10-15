@@ -1,3 +1,4 @@
+import { showBadgeToast, showLevelUpToast } from '@/components/Badge/toast';
 import Results from '@/components/Result.js';
 import Timer from '@/components/Timer';
 import { useAuth } from '@/context/AuthContext';
@@ -70,15 +71,26 @@ export default function Race() {
     const accuracy = sentence.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
 
     try {
-      const { gamification } = await saveTypingStat(wpm, accuracy, timeElapsed);
+      const { gamification, newBadges } = await saveTypingStat(wpm, accuracy, timeElapsed);
+
+      /**
+       * Display toasts:
+       *
+       * - For each new badge earned
+       * - For skill level upgrade
+       */
+      newBadges.forEach((badgeId) => showBadgeToast(badgeId));
+      if (gamification.levelUp) {
+        showLevelUpToast(gamification.stat.skillLevel);
+      }
+
       setStats({
         wpm,
         accuracy,
         mistakes,
         timeElapsed,
         correctChars,
-        totalChars: sentence.length,
-        gamification
+        totalChars: sentence.length
       });
       setRaceStatus('completed');
     } catch (error) {

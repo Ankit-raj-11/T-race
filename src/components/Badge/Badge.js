@@ -1,5 +1,5 @@
-import { Lock } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { BadgePic, BadgeRarity } from './BadgeHelper';
 
 // Hook to detect reduced motion preference
 function useReducedMotion() {
@@ -137,45 +137,13 @@ export default function Badge({
       }}
     >
       {/* Badge Icon/Image with enhanced styling */}
-      <div
-        className={`w-16 h-16 mb-3 rounded-full flex items-center justify-center transition-all duration-300 ${
-          isUnlocked
-            ? 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/30'
-            : 'bg-gray-700/50 grayscale brightness-50'
-        } ${
-          isHovered && isUnlocked && shouldAnimate
-            ? 'shadow-xl shadow-cyan-400/50 brightness-110'
-            : ''
-        }`}
-      >
-        {badge?.iconType === 'url' && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={badge.icon}
-            alt={badge.name}
-            className={`w-10 h-10 transition-all duration-300 ${
-              !isUnlocked
-                ? 'grayscale opacity-40 brightness-75'
-                : isHovered && shouldAnimate
-                  ? 'brightness-110 drop-shadow-lg'
-                  : 'brightness-100'
-            }`}
-          />
-        )}
-        {badge?.iconType === 'string' && (
-          <div
-            className={`text-2xl transition-all duration-300 ${
-              isUnlocked
-                ? isHovered && shouldAnimate
-                  ? 'text-white drop-shadow-lg scale-110'
-                  : 'text-white'
-                : 'text-gray-500 opacity-60'
-            }`}
-          >
-            {isUnlocked ? (badge?.icon ?? '🏆') : <Lock size={24} />}
-          </div>
-        )}
-      </div>
+      <BadgePic
+        className="mb-3"
+        badge={badge}
+        isUnlocked={isUnlocked}
+        isHovered={isHovered}
+        shouldAnimate={shouldAnimate}
+      />
 
       {/* Badge Name with enhanced styling */}
       <h3
@@ -191,23 +159,12 @@ export default function Badge({
       </h3>
 
       {/* Badge Rarity Indicator with enhanced styling */}
-      {badge?.rarity && (
-        <div
-          className={`text-xs px-2 py-1 rounded-full transition-all duration-300 ${
-            isUnlocked
-              ? badge.rarity === 'legendary'
-                ? 'bg-yellow-500/30 text-yellow-300 shadow-sm shadow-yellow-400/20'
-                : badge.rarity === 'epic'
-                  ? 'bg-purple-500/30 text-purple-300 shadow-sm shadow-purple-400/20'
-                  : badge.rarity === 'rare'
-                    ? 'bg-blue-500/30 text-blue-300 shadow-sm shadow-blue-400/20'
-                    : 'bg-gray-500/30 text-gray-300 shadow-sm shadow-gray-400/20'
-              : 'bg-gray-700/20 text-gray-600 opacity-50'
-          } ${isHovered && isUnlocked && shouldAnimate ? 'brightness-125 shadow-md' : ''}`}
-        >
-          {badge.rarity}
-        </div>
-      )}
+      <BadgeRarity
+        badge={badge}
+        isUnlocked={isUnlocked}
+        isHovered={isHovered}
+        shouldAnimate={shouldAnimate}
+      />
 
       {/* Enhanced Unlock Glow Effect */}
       {isUnlocked && (

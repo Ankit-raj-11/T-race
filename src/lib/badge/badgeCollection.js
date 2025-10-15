@@ -105,26 +105,27 @@ export const BADGE_COLLECTION = [
     threshold: 130,
     rarity: 'legendary'
   }),
-  {
-    badgeId: 'accuracy_expert_95',
-    name: 'Accuracy Expert',
-    description: 'Achieve 95% accuracy in a race',
-    iconType: 'string',
-    icon: null,
-    category: 'accuracy',
-    criteria: { type: 'accuracy', threshold: 95, condition: '>=' },
-    rarity: 'rare'
-  },
-  {
-    badgeId: 'perfect_typist',
-    name: 'Perfect Typist',
-    description: 'Achieve 100% accuracy in a race',
-    iconType: 'string',
-    icon: null,
-    category: 'accuracy',
-    criteria: { type: 'accuracy', threshold: 100, condition: '==' },
-    rarity: 'rare'
-  },
+  // TODO: we add other type of badge
+  // {
+  //   badgeId: 'accuracy_expert_95',
+  //   name: 'Accuracy Expert',
+  //   description: 'Achieve 95% accuracy in a race',
+  //   iconType: 'string',
+  //   icon: null,
+  //   category: 'accuracy',
+  //   criteria: { type: 'accuracy', threshold: 95, condition: '>=' },
+  //   rarity: 'rare'
+  // },
+  // {
+  //   badgeId: 'perfect_typist',
+  //   name: 'Perfect Typist',
+  //   description: 'Achieve 100% accuracy in a race',
+  //   iconType: 'string',
+  //   icon: null,
+  //   category: 'accuracy',
+  //   criteria: { type: 'accuracy', threshold: 100, condition: '==' },
+  //   rarity: 'rare'
+  // },
   {
     badgeId: 'warm_up',
     name: 'Warm Up',
@@ -164,17 +165,17 @@ export const BADGE_COLLECTION = [
     category: 'milestone',
     criteria: { type: 'games_played', threshold: 100, condition: '>=' },
     rarity: 'rare'
-  },
-  {
-    badgeId: 'aim_high',
-    name: 'Aim High',
-    description: 'Perform well 10 times in a row',
-    iconType: 'string',
-    icon: null,
-    category: 'consistency',
-    criteria: { type: 'streak', threshold: 10, condition: 'consecutive' },
-    rarity: 'legendary'
   }
+  // {
+  //   badgeId: 'aim_high',
+  //   name: 'Aim High',
+  //   description: 'Perform well 10 times in a row',
+  //   iconType: 'string',
+  //   icon: null,
+  //   category: 'consistency',
+  //   criteria: { type: 'streak', threshold: 10, condition: 'consecutive' },
+  //   rarity: 'legendary'
+  // }
 ];
 
 /** Badge template for speed related achievements */

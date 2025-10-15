@@ -180,7 +180,6 @@ export default function BadgeReactTooltip() {
         zIndex: 50,
         maxWidth: '20rem' // max-w-xs
       }}
-      className="badge-tooltip"
       role="tooltip"
       aria-live="polite"
       aria-atomic="true"
