@@ -1,19 +1,3 @@
-// --- 🎯 Achievements & Badges Data ---
-export const WPM_BADGES = {
-  20: { name: '🎈 Warm-Up Starter', icon: '🎈' },
-  30: { name: '🪶 Quick Learner', icon: '🪶' },
-  40: { name: '🎯 Focused Fingers', icon: '🎯' },
-  50: { name: '🥉 Fast Fingers', icon: '🥉' },
-  60: { name: '💫 Typing Enthusiast', icon: '💫' },
-  70: { name: '🚀 Speed Challenger', icon: '🚀' },
-  80: { name: '🥈 Speedster', icon: '🥈' },
-  90: { name: '🔥 Keyboard Ninja', icon: '🔥' },
-  100: { name: '⚡ Lightning Hands', icon: '⚡' },
-  110: { name: '🏆 Type Master', icon: '🏆' },
-  120: { name: '🧠 Typing Virtuoso', icon: '🧠' },
-  130: { name: '💥 Legendary Typist', icon: '💥' }
-};
-
 // --- 🧠 Skill Levels Data ---
 export const SKILL_LEVELS = [
   { wpm: 0, title: '🐢 Beginner' },
@@ -65,22 +49,6 @@ export const processTestResult = (currentUserStats, newWpm) => {
   newStats.longestStreak = Math.max(newStats.longestStreak || 0, newStats.currentStreak);
   newStats.lastTestWPM = newWpm;
   newStats.lastTestDate = today;
-
-  // --- 🎯 Achievements & Badges Logic ---
-  const currentBadges = newStats.badges || [];
-  const earnedBadges = new Set(currentBadges.map((b) => b.name)); // Use a Set for efficient lookup
-
-  for (const wpmKey in WPM_BADGES) {
-    const badge = WPM_BADGES[wpmKey];
-    if (newWpm >= parseInt(wpmKey) && !earnedBadges.has(badge.name)) {
-      currentBadges.push({
-        name: badge.name,
-        icon: badge.icon,
-        dateEarned: today
-      });
-    }
-  }
-  newStats.badges = currentBadges;
 
   // --- 🧠 Skill Levels Logic ---
   const newSkill = SKILL_LEVELS.slice()

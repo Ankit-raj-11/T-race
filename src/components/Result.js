@@ -1,41 +1,10 @@
-import { useAuth } from '@/context/AuthContext';
-import { processTestResult } from '@/lib/gamification';
 import { AlertCircle, ArrowLeft, Award, RotateCcw, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Results({ stats, onNextRound, onBackHome }) {
-  const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars } = stats;
-  const { user } = useAuth();
+  const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars, gamification } = stats;
 
-  const [gamificationUpdate, setGamificationUpdate] = useState(null);
-
-  useEffect(() => {
-    if (user && wpm > 0) {
-      const updateUserStats = async () => {
-        try {
-          const response = await fetch('/api/badges/user-stat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wpm })
-          });
-          const data = await response.json();
-          if (data.newBadges.length > 0 || data.levelUp) {
-            setGamificationUpdate({
-              newBadges: data.newBadges,
-              levelUp: data.levelUp,
-              newSkill: data.stat.skillLevel
-            });
-          }
-        } catch (error) {
-          console.error('Error creating or updating user stats:', error);
-        }
-      };
-
-      updateUserStats();
-    } else {
-      console.log('Skipping stats save: User is not available or WPM is zero.');
-    }
-  }, [user, wpm]);
+  const showAchievement = gamification.levelUp;
 
   // ... (The rest of your component remains the same) ...
   const commonMistakes = Object.entries(mistakes)
@@ -75,24 +44,16 @@ export default function Results({ stats, onNextRound, onBackHome }) {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        {gamificationUpdate && (
+        {showAchievement && (
           <div className="my-6 bg-gray-800 border border-purple-500 rounded-lg p-4 text-center">
-            {gamificationUpdate.levelUp && (
+            {gamification.levelUp && (
               <div className="flex items-center justify-center gap-2 text-lg text-yellow-400 mb-2">
                 <Star size={20} />
                 <span>
-                  You leveled up! New rank: <strong>{gamificationUpdate.newSkill}</strong>
+                  You leveled up! New rank: <strong>{gamification.stat.skillLevel}</strong>
                 </span>
               </div>
             )}
-            {gamificationUpdate.newBadges.map((badge, i) => (
-              <div key={i} className="flex items-center justify-center gap-2 text-lg text-cyan-400">
-                <Award size={20} />
-                <span>
-                  New badge unlocked: <strong>{badge.name}</strong>
-                </span>
-              </div>
-            ))}
           </div>
         )}
 

@@ -1,27 +1,5 @@
 import mongoose from 'mongoose';
 
-const BadgeSchema = new mongoose.Schema(
-  {
-    dateEarned: {
-      type: Date,
-      required: true,
-      default: Date.now
-    },
-    icon: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    }
-  },
-  // This is a sub-document, don't need to generate _id
-  { _id: false }
-);
-
 const UserStatSchema = new mongoose.Schema(
   {
     userId: {
@@ -64,9 +42,6 @@ const UserStatSchema = new mongoose.Schema(
       type: Date,
       required: true,
       default: Date.now
-    },
-    badges: {
-      type: [BadgeSchema]
     }
   },
   {

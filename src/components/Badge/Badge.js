@@ -24,6 +24,7 @@ export default function Badge({
   badge,
   showTooltip = false,
   isUnlocked = false,
+  unlockedAt,
   isNewlyUnlocked = false,
   progress,
   animationEnabled = true,
@@ -66,6 +67,7 @@ export default function Badge({
       description: badge.description,
       criteria: badge.criteria,
       rarity: badge.rarity,
+      unlockedAt,
       isUnlocked,
       progress
     });
@@ -146,10 +148,10 @@ export default function Badge({
             : ''
         }`}
       >
-        {badge?.iconUrl ? (
+        {badge?.iconType === 'url' && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={badge.iconUrl}
+            src={badge.icon}
             alt={badge.name}
             className={`w-10 h-10 transition-all duration-300 ${
               !isUnlocked
@@ -159,7 +161,8 @@ export default function Badge({
                   : 'brightness-100'
             }`}
           />
-        ) : (
+        )}
+        {badge?.iconType === 'string' && (
           <div
             className={`text-2xl transition-all duration-300 ${
               isUnlocked
@@ -169,7 +172,7 @@ export default function Badge({
                 : 'text-gray-500 opacity-60'
             }`}
           >
-            {isUnlocked ? '🏆' : <Lock size={24} />}
+            {isUnlocked ? (badge?.icon ?? '🏆') : <Lock size={24} />}
           </div>
         )}
       </div>

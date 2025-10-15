@@ -52,10 +52,14 @@ class BadgeService {
         await this.unlockBadges(userId, newlyUnlockedBadges);
       }
 
+      // Calculate other gamification stats
+      const gamification = await this.updateUserStat(userId, sessionData.wpm);
+
       return {
         newBadges: newlyUnlockedBadges,
         evaluationResults,
-        totalEvaluated: availableBadges.length
+        totalEvaluated: availableBadges.length,
+        gamification
       };
     } catch (error) {
       console.error('Error evaluating achievements:', error);
@@ -332,7 +336,7 @@ class BadgeService {
             unlocked: true,
             progress: 100,
             isViewed: unlockedBadge.isViewed,
-            unlockedAt: unlockedBadges.unlockedAt
+            unlockedAt: unlockedBadge.unlockedAt
           };
         } else {
           // Calculate current progress for locked badges
@@ -433,10 +437,7 @@ class BadgeService {
       );
 
       const levelUp = newStat.skillLevel !== curStat.skillLevel;
-      const newBadges = newStat.badges.filter(
-        (b) => !(curStat.badges ?? []).some((cb) => cb.name === b.name)
-      );
-      return { stat: newStat, levelUp, newBadges };
+      return { stat: newStat, levelUp };
     } catch (error) {
       console.error('Error getting user stat progress:', error);
       throw new Error(`Failed to get user stat progress: ${error.message}`);

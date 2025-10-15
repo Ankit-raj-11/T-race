@@ -46,14 +46,14 @@ export default async function handler(req, res) {
         }
       })();
 
-      // Check if user has obtained new badges
-      const result = await badgeService.evaluateAchievements(userId, {
+      // Check if user has obtained new badges/achievements
+      const { newBadges, gamification } = await badgeService.evaluateAchievements(userId, {
         wpm,
         accuracy,
         timePlayed
       });
 
-      return res.status(201).json({ message: 'Stat saved', stat });
+      return res.status(201).json({ message: 'Stat saved', stat, newBadges, gamification });
     } catch (error) {
       console.error('Error saving typing stat:', error);
       return res.status(500).json({ message: 'Internal server error', error: error.message });
