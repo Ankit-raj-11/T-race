@@ -7,7 +7,7 @@ import { BadgePic, BadgeRarity } from './BadgeHelper';
 
 function BadgeContent({ badge, closeToast, toastProps }) {
   return (
-    <Link href="/profile" onClick={() => closeToast()}>
+    <Link href={`/profile#${badge.badgeId}`} onClick={() => closeToast()}>
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-center gap-2">
           <BadgePic badge={badge} isUnlocked />

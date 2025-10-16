@@ -1,3 +1,4 @@
+import { useIntersectionObserver } from '@/hooks/intersection-observer';
 import React, { useEffect, useRef, useState } from 'react';
 import { BadgePic, BadgeRarity } from './BadgeHelper';
 
@@ -34,7 +35,10 @@ export default function Badge({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-  const badgeRef = useRef(null);
+  const [badgeRef, badgeVisible] = useIntersectionObserver(
+    // Start animation only when 80% of element is visible
+    { threshold: 0.8 }
+  );
 
   // Respect user's motion preferences
   const shouldAnimate = animationEnabled && !prefersReducedMotion;
@@ -56,7 +60,7 @@ export default function Badge({
     return () => {
       badgeElement.removeEventListener('animationend', handleAnimationEnd);
     };
-  }, [onAnimationComplete, badge]);
+  }, [onAnimationComplete, badge, badgeRef]);
 
   // Generate tooltip content
   const getTooltipContent = () => {
@@ -93,8 +97,13 @@ export default function Badge({
   };
 
   // Base classes for the badge container with optimized transitions
-  const baseClasses =
-    'relative flex flex-col items-center p-4 rounded-lg border cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50 will-change-transform';
+  const baseClasses = [
+    'relative flex flex-col items-center p-4',
+    'rounded-lg border cursor-pointer',
+    'focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50',
+    // Add scroll margin, so it will clear the top banner
+    'will-change-transform scroll-mt-18'
+  ].join(' ');
 
   // Enhanced styling for unlocked badges with glow effects and full color display
   const unlockedClasses = isUnlocked
@@ -113,11 +122,12 @@ export default function Badge({
     isHovered && isUnlocked && shouldAnimate ? 'border-cyan-400 shadow-xl shadow-cyan-400/25' : '';
 
   // Bouncing animation for newly unlocked badges
-  const bounceClasses = isNewlyUnlocked && shouldAnimate ? 'badge-bounce' : '';
+  const bounceClasses = badgeVisible && isNewlyUnlocked && shouldAnimate ? 'badge-bounce' : '';
 
   return (
     <div
       ref={badgeRef}
+      id={badge.badgeId}
       className={`${baseClasses} ${transitionClasses} ${unlockedClasses} ${lockedClasses} ${hoverClasses} ${bounceClasses}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
