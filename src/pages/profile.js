@@ -1,4 +1,4 @@
-import BadgesDisplay from '@/components/Badge/BadgesDisplay';
+import BadgeCollection from '@/components/Badge/BadgeCollection';
 import StreakBanner from '@/components/StreakBanner';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
@@ -16,8 +16,8 @@ export default function Profile() {
       }
 
       try {
-        const response = await fetch('/api/badges/user-stat');
-        const data = await response.json();
+        const resp = await fetch('/api/badges/user-stat');
+        const data = await resp.json();
         setUserStats(data.stat);
       } catch (error) {
         console.error('Error fetching user stats:', error);
@@ -73,7 +73,8 @@ export default function Profile() {
       </div>
 
       <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
-        <BadgesDisplay badges={userStats.badges} />
+        <p className="text-gray-400 text-sm mb-2">Badges Collection</p>
+        <BadgeCollection showOnlyNearCompletion={false} />
       </div>
     </div>
   );

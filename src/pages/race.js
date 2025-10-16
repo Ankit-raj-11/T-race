@@ -1,11 +1,14 @@
+import { showBadgeToast, showLevelUpToast } from '@/components/Badge/toast';
+import Results from '@/components/Result.js';
+import Timer from '@/components/Timer';
+import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
-import Results from '../components/Result.js'; //
-import Timer from '../components/Timer';
 
 export default function Race() {
+  const { user, saveTypingStat } = useAuth();
   const [sentence, setSentence] = useState('');
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(true);
@@ -44,7 +47,7 @@ export default function Race() {
     }
   };
 
-  const endRace = () => {
+  const endRace = async () => {
     setTimerActive(false);
 
     // --- Calculate stats ---
@@ -67,15 +70,32 @@ export default function Race() {
     const wpm = timeElapsed > 0 ? Math.round(correctChars / 5 / (timeElapsed / 60)) : 0;
     const accuracy = sentence.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
 
-    setStats({
-      wpm,
-      accuracy,
-      mistakes,
-      timeElapsed,
-      correctChars,
-      totalChars: sentence.length
-    });
-    setRaceStatus('completed');
+    try {
+      const { gamification, newBadges } = await saveTypingStat(wpm, accuracy, timeElapsed);
+
+      /**
+       * Display toasts:
+       *
+       * - For each new badge earned
+       * - For skill level upgrade
+       */
+      newBadges.forEach((badgeId) => showBadgeToast(badgeId));
+      if (gamification.levelUp) {
+        showLevelUpToast(gamification.stat.skillLevel);
+      }
+
+      setStats({
+        wpm,
+        accuracy,
+        mistakes,
+        timeElapsed,
+        correctChars,
+        totalChars: sentence.length
+      });
+      setRaceStatus('completed');
+    } catch (error) {
+      console.error('Error creating or updating user stats:', error);
+    }
   };
 
   const handleInputChange = (e) => {

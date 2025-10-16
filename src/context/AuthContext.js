@@ -98,7 +98,10 @@ export function AuthProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ wpm, accuracy, timePlayed })
       });
-      if (!resp.ok) {
+      if (resp.ok) {
+        const result = await resp.json();
+        return result;
+      } else {
         console.error('Failed to save typing stat');
       }
     } catch (err) {

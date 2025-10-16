@@ -1,41 +1,8 @@
-import { useAuth } from '@/context/AuthContext';
-import { processTestResult } from '@/lib/gamification';
-import { AlertCircle, ArrowLeft, Award, RotateCcw, Star } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Award, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Results({ stats, onNextRound, onBackHome }) {
   const { wpm, accuracy, mistakes, timeElapsed, correctChars, totalChars } = stats;
-  const { user } = useAuth();
-
-  const [gamificationUpdate, setGamificationUpdate] = useState(null);
-
-  useEffect(() => {
-    if (user && wpm > 0) {
-      const updateUserStats = async () => {
-        try {
-          const response = await fetch('/api/badges/user-stat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wpm })
-          });
-          const data = await response.json();
-          if (data.newBadges.length > 0 || data.levelUp) {
-            setGamificationUpdate({
-              newBadges: data.newBadges,
-              levelUp: data.levelUp,
-              newSkill: data.stat.skillLevel
-            });
-          }
-        } catch (error) {
-          console.error('Error creating or updating user stats:', error);
-        }
-      };
-
-      updateUserStats();
-    } else {
-      console.log('Skipping stats save: User is not available or WPM is zero.');
-    }
-  }, [user, wpm]);
 
   // ... (The rest of your component remains the same) ...
   const commonMistakes = Object.entries(mistakes)
@@ -75,27 +42,6 @@ export default function Results({ stats, onNextRound, onBackHome }) {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        {gamificationUpdate && (
-          <div className="my-6 bg-gray-800 border border-purple-500 rounded-lg p-4 text-center">
-            {gamificationUpdate.levelUp && (
-              <div className="flex items-center justify-center gap-2 text-lg text-yellow-400 mb-2">
-                <Star size={20} />
-                <span>
-                  You leveled up! New rank: <strong>{gamificationUpdate.newSkill}</strong>
-                </span>
-              </div>
-            )}
-            {gamificationUpdate.newBadges.map((badge, i) => (
-              <div key={i} className="flex items-center justify-center gap-2 text-lg text-cyan-400">
-                <Award size={20} />
-                <span>
-                  New badge unlocked: <strong>{badge.name}</strong>
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-semibold text-gray-300 mb-3">Words Per Minute</h2>
           <div className="text-7xl font-bold text-cyan-400">{wpm}</div>
