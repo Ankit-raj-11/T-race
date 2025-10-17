@@ -52,13 +52,20 @@ export default function BadgeCollection({ showOnlyNearCompletion = false }) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          badgeId: badge.badgeId
-        })
+        body: JSON.stringify({ badgeId: badge.badgeId })
       });
 
       if (response.ok) {
         console.log(`Badge ${badge.badgeId} marked as viewed`);
+
+        // Mark badge as viewed
+        setProgress((prev) => ({
+          ...prev,
+          [badge.badgeId]: {
+            ...prev[badge.badgeId],
+            isViewed: true
+          }
+        }));
       } else {
         console.error('Failed to mark badge as viewed:', response.statusText);
       }
