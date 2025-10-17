@@ -70,32 +70,41 @@ export default function Race() {
     const wpm = timeElapsed > 0 ? Math.round(correctChars / 5 / (timeElapsed / 60)) : 0;
     const accuracy = sentence.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
 
-    try {
-      const { gamification, newBadges } = await saveTypingStat(wpm, accuracy, timeElapsed);
+    /**
+     * Save user statistic and process achievements
+     *
+     * We don't have to wait until this operation finishes before displaying the results
+     */
+    saveTypingStat(wpm, accuracy, timeElapsed)
+      .then((typingStat) => {
+        if (typingStat) {
+          const { gamification, newBadges } = typingStat;
 
-      /**
-       * Display toasts:
-       *
-       * - For each new badge earned
-       * - For skill level upgrade
-       */
-      newBadges.forEach((badgeId) => showBadgeToast(badgeId));
-      if (gamification.levelUp) {
-        showLevelUpToast(gamification.stat.skillLevel);
-      }
-
-      setStats({
-        wpm,
-        accuracy,
-        mistakes,
-        timeElapsed,
-        correctChars,
-        totalChars: sentence.length
+          /**
+           * Display toasts:
+           *
+           * - For each new badge earned
+           * - For skill level upgrade
+           */
+          newBadges.forEach((badgeId) => showBadgeToast(badgeId));
+          if (gamification.levelUp) {
+            showLevelUpToast(gamification.stat.skillLevel);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error creating or updating user stats:', error);
       });
-      setRaceStatus('completed');
-    } catch (error) {
-      console.error('Error creating or updating user stats:', error);
-    }
+
+    setStats({
+      wpm,
+      accuracy,
+      mistakes,
+      timeElapsed,
+      correctChars,
+      totalChars: sentence.length
+    });
+    setRaceStatus('completed');
   };
 
   const handleInputChange = (e) => {
