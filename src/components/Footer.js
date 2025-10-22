@@ -1,6 +1,7 @@
 import { Github, Linkedin, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import Image from 'next/image';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -24,7 +25,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2">
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-2xl font-bold">
-                T-race
+                <Image src='/logo2.png' alt='T-race' width={80} height={60} />
               </span>
             </Link>
             <p className="text-sm">
