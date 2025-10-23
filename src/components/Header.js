@@ -17,7 +17,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-2xl font-bold">
-              <Image src='/logo2.png' alt='logo' width={70} height={60}/> 
+              <Image src='/logo.png' alt='logo' width={70} height={60}/> 
             </span>
 
           {/* Desktop Navigation */}
