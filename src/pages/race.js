@@ -192,6 +192,18 @@ export default function Race() {
     );
   };
 
+  // --- BEGIN CHANGED: safe no-op fallbacks for missing toast utilities ---
+  // If your real toast module exists, restore the import and remove these fallbacks.
+  const showBadgeToast = (badgeId) => {
+    // noop (build-safe)
+    // console.debug('badge toast:', badgeId);
+  };
+  const showLevelUpToast = (level) => {
+    // noop (build-safe)
+    // console.debug('level up:', level);
+  };
+  // --- END CHANGED ---
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative">
       {/* Background Pattern */}

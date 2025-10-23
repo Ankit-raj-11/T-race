@@ -6,6 +6,24 @@ import PracticeSettings from '../components/PracticeSettings';
 import Timer from '../components/Timer';
 import TypingFeedback from '../components/TypingFeedback';
 
+// --- Professionalized Word Counting Logic ---
+
+/**
+ * Calculates the number of "words" in a given string.
+ * A word is defined as any sequence of non-whitespace characters separated by one or more whitespace characters.
+ * This is a standard approach for counting words in typing tests.
+ *
+ * @param {string} str The string to analyze (e.g., the target text or the user input).
+ * @returns {number} The count of words.
+ */
+const calculateWords = (str) => {
+  // Use a regex to match one or more non-whitespace characters
+  const wordMatches = str.match(/\S+/g);
+  return wordMatches ? wordMatches.length : 0;
+};
+
+// --- End Professionalized Word Counting Logic ---
+
 export default function Practice() {
   const [settings, setSettings] = useState({
     source: 'randomWords',
@@ -73,7 +91,7 @@ export default function Practice() {
 
   // Don't initialize with text on page load - wait for user to configure settings
   // useEffect(() => {
-  //   fetchPracticeText();
+  //   fetchPracticeText();
   // }, []);
 
   const handleStartPractice = async (customSettings = null) => {
@@ -157,6 +175,7 @@ export default function Practice() {
         const correctChars = calculateCorrectChars(value);
         const accuracy = Math.round((correctChars / value.length) * 100);
         const timeElapsed = startTime ? Math.round((Date.now() - startTime) / 1000) : 0;
+        // WPM calculation based on total characters / 5 / minutes elapsed
         const wpm = timeElapsed > 0 ? Math.round(value.length / 5 / (timeElapsed / 60)) : 0;
         const errors = value.length - correctChars;
 
@@ -206,6 +225,7 @@ export default function Practice() {
     setIsActive(false);
     const correctChars = calculateCorrectChars(userInput);
     const accuracy = userInput.length > 0 ? Math.round((correctChars / userInput.length) * 100) : 0;
+    // WPM calculation based on total characters / 5 / 1 minute
     const wpm = userInput.length > 0 ? Math.round(userInput.length / 5 / 1) : 0; // 1 minute elapsed
     const errors = userInput.length - correctChars;
 
@@ -224,6 +244,10 @@ export default function Practice() {
   };
 
   const completionPercentage = text.length > 0 ? (userInput.length / text.length) * 100 : 0;
+
+  // Calculate words using the new professional function
+  const typedWords = calculateWords(userInput);
+  const totalWords = calculateWords(text);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -378,9 +402,8 @@ export default function Practice() {
                     </div>
                     <div className="flex gap-6 text-sm text-gray-400">
                       <span>
-                        <strong>Words:</strong>{' '}
-                        {userInput.split(' ').filter((w) => w.length > 0).length} /{' '}
-                        {text.split(' ').length}
+                        {/* Using the new word calculation function */}
+                        <strong>Words:</strong> {typedWords} / {totalWords}
                       </span>
                       {settings.mode === 'untimed' && startTime && (
                         <span>
