@@ -1,16 +1,16 @@
-import dbConnect from '../db';
-import UserBadge from '../../models/UserBadge';
-import User from '../../models/User';
-import TypingStat from '../../models/TypingStat';
+import dbConnect from '@/lib/db';
+import { processTestResult } from '@/lib/gamification';
+import TypingStat from '@/models/TypingStat';
+import User from '@/models/User';
+import UserBadge from '@/models/UserBadge';
+import UserStat from '@/models/UserStat';
 import { BADGE_COLLECTION } from './badgeCollection';
 
-/**
- * Badge criteria evaluation service
- * Handles achievement detection and badge unlocking
- */
+/** Badge criteria evaluation service Handles achievement detection and badge unlocking */
 class BadgeService {
   /**
    * Evaluates user performance against all badge criteria
+   *
    * @param {string} userId - User ID
    * @param {Object} sessionData - Current session performance data
    * @param {number} sessionData.wpm - Words per minute
@@ -52,10 +52,14 @@ class BadgeService {
         await this.unlockBadges(userId, newlyUnlockedBadges);
       }
 
+      // Calculate other gamification stats
+      const gamification = await this.updateUserStat(userId, sessionData.wpm);
+
       return {
         newBadges: newlyUnlockedBadges,
         evaluationResults,
-        totalEvaluated: availableBadges.length
+        totalEvaluated: availableBadges.length,
+        gamification
       };
     } catch (error) {
       console.error('Error evaluating achievements:', error);
@@ -65,6 +69,7 @@ class BadgeService {
 
   /**
    * Evaluates a single badge's criteria against user performance
+   *
    * @param {string} userId - User ID
    * @param {Object} badge - Badge document
    * @param {Object} sessionData - Current session performance data
@@ -103,9 +108,7 @@ class BadgeService {
     }
   }
 
-  /**
-   * Evaluates WPM-based criteria
-   */
+  /** Evaluates WPM-based criteria */
   evaluateWpmCriteria(criteria, sessionData) {
     const { wpm } = sessionData;
     const { threshold, condition } = criteria;
@@ -131,9 +134,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates accuracy-based criteria
-   */
+  /** Evaluates accuracy-based criteria */
   evaluateAccuracyCriteria(criteria, sessionData) {
     const { accuracy } = sessionData;
     const { threshold, condition } = criteria;
@@ -159,9 +160,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates games played criteria
-   */
+  /** Evaluates games played criteria */
   async evaluateGamesPlayedCriteria(userId, criteria) {
     const user = await User.findOne({ userId });
     if (!user) {
@@ -192,9 +191,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates streak-based criteria (consecutive achievements)
-   */
+  /** Evaluates streak-based criteria (consecutive achievements) */
   async evaluateStreakCriteria(userId, criteria, sessionData) {
     const { threshold, condition } = criteria;
 
@@ -252,9 +249,7 @@ class BadgeService {
     };
   }
 
-  /**
-   * Evaluates time played criteria
-   */
+  /** Evaluates time played criteria */
   async evaluateTimePlayedCriteria(userId, criteria) {
     const user = await User.findOne({ userId });
     if (!user) {
@@ -288,6 +283,7 @@ class BadgeService {
 
   /**
    * Unlocks badges for a user and updates user statistics
+   *
    * @param {string} userId - User ID
    * @param {string[]} badgeIds - Array of badge IDs to unlock
    */
@@ -322,6 +318,7 @@ class BadgeService {
 
   /**
    * Gets user's badge progress for all available badges
+   *
    * @param {string} userId - User ID
    * @returns {Promise<Object>} Badge progress data
    */
@@ -339,7 +336,7 @@ class BadgeService {
             unlocked: true,
             progress: 100,
             isViewed: unlockedBadge.isViewed,
-            unlockedAt: unlockedBadges.unlockedAt
+            unlockedAt: unlockedBadge.unlockedAt
           };
         } else {
           // Calculate current progress for locked badges
@@ -366,6 +363,7 @@ class BadgeService {
 
   /**
    * Marks badges as viewed to prevent repeated celebration animations
+   *
    * @param {string} userId - User ID
    * @param {string[]} badgeIds - Array of badge IDs to mark as viewed
    * @returns {Promise<void>}
@@ -393,6 +391,56 @@ class BadgeService {
     } catch (error) {
       console.error('Error marking badges as viewed:', error);
       throw new Error(`Failed to mark badges as viewed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Gets user's achievement statistics
+   *
+   * @param {string} userId - User ID
+   * @returns {Promise<Object>} Achievement data
+   */
+  async getUserStat(userId) {
+    try {
+      await dbConnect();
+
+      const stat = await UserStat.findOne({ userId })
+        // Don't return the version control
+        .select('-__v')
+        // Prevents direct modification to document
+        .lean();
+      return stat ?? {};
+    } catch (error) {
+      console.error('Error getting user stat progress:', error);
+      throw new Error(`Failed to get user stat progress: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update user's achievement statistics
+   *
+   * @param {string} userId - User ID
+   * @param {object} wpm - Latest wpm
+   * @returns {Promise<Object>} Achievement data + gamification states
+   */
+  async updateUserStat(userId, wpm) {
+    try {
+      await dbConnect();
+
+      const curStat = await this.getUserStat(userId);
+      const newStat = processTestResult(curStat, wpm);
+      await UserStat.updateOne(
+        { userId },
+        { $set: newStat },
+        // Creates document if it doesn't exist
+        { upsert: true }
+      );
+
+      const levelUp = newStat.skillLevel !== curStat.skillLevel;
+      return { stat: newStat, levelUp };
+    } catch (error) {
+      console.error('Error getting user stat progress:', error);
+      throw new Error(`Failed to get user stat progress: ${error.message}`);
     }
   }
 }

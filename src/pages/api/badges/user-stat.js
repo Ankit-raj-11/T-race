@@ -1,9 +1,7 @@
 import { getSession } from '@/firebase-admin';
-import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
 import badgeService from '@/lib/badge/badgeService';
-import dbConnect from '@/lib/db';
 
-/** Get user's badge progress for all available badges */
+/** Get user achievement statistics */
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -11,16 +9,12 @@ export default async function handler(req, res) {
 
   const { userId } = await getSession(req, res);
   try {
-    await dbConnect();
-
-    const progress = await badgeService.getUserBadgeProgress(userId);
-
+    const stat = await badgeService.getUserStat(userId);
     return res.status(200).json({
       success: true,
-      progress
+      stat
     });
   } catch (error) {
-    console.error('Error fetching user badges:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',

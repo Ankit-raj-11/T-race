@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Lock } from 'lucide-react';
+import { useIntersectionObserver } from '@/hooks/intersection-observer';
+import React, { useEffect, useRef, useState } from 'react';
+import { BadgePic, BadgeRarity } from './BadgeHelper';
 
 // Hook to detect reduced motion preference
 function useReducedMotion() {
@@ -24,18 +25,20 @@ export default function Badge({
   badge,
   showTooltip = false,
   isUnlocked = false,
+  unlockedAt,
   isNewlyUnlocked = false,
   progress,
   animationEnabled = true,
-  /**
-   * When isNewlyUnlocked animation completes, this will be called
-   */
+  /** When isNewlyUnlocked animation completes, this will be called */
   onAnimationComplete,
   onClick
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-  const badgeRef = useRef(null);
+  const [badgeRef, badgeVisible] = useIntersectionObserver(
+    // Start animation only when 80% of element is visible
+    { threshold: 0.8 }
+  );
 
   // Respect user's motion preferences
   const shouldAnimate = animationEnabled && !prefersReducedMotion;
@@ -57,7 +60,7 @@ export default function Badge({
     return () => {
       badgeElement.removeEventListener('animationend', handleAnimationEnd);
     };
-  }, [onAnimationComplete, badge]);
+  }, [onAnimationComplete, badge, badgeRef]);
 
   // Generate tooltip content
   const getTooltipContent = () => {
@@ -68,6 +71,7 @@ export default function Badge({
       description: badge.description,
       criteria: badge.criteria,
       rarity: badge.rarity,
+      unlockedAt,
       isUnlocked,
       progress
     });
@@ -93,8 +97,13 @@ export default function Badge({
   };
 
   // Base classes for the badge container with optimized transitions
-  const baseClasses =
-    'relative flex flex-col items-center p-4 rounded-lg border cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50 will-change-transform';
+  const baseClasses = [
+    'relative flex flex-col items-center p-4',
+    'rounded-lg border cursor-pointer',
+    'focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-50',
+    // Add scroll margin, so it will clear the top banner
+    'will-change-transform scroll-mt-18'
+  ].join(' ');
 
   // Enhanced styling for unlocked badges with glow effects and full color display
   const unlockedClasses = isUnlocked
@@ -113,11 +122,12 @@ export default function Badge({
     isHovered && isUnlocked && shouldAnimate ? 'border-cyan-400 shadow-xl shadow-cyan-400/25' : '';
 
   // Bouncing animation for newly unlocked badges
-  const bounceClasses = isNewlyUnlocked && shouldAnimate ? 'badge-bounce' : '';
+  const bounceClasses = badgeVisible && isNewlyUnlocked && shouldAnimate ? 'badge-bounce' : '';
 
   return (
     <div
       ref={badgeRef}
+      id={badge.badgeId}
       className={`${baseClasses} ${transitionClasses} ${unlockedClasses} ${lockedClasses} ${hoverClasses} ${bounceClasses}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -137,44 +147,13 @@ export default function Badge({
       }}
     >
       {/* Badge Icon/Image with enhanced styling */}
-      <div
-        className={`w-16 h-16 mb-3 rounded-full flex items-center justify-center transition-all duration-300 ${
-          isUnlocked
-            ? 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-400/30'
-            : 'bg-gray-700/50 grayscale brightness-50'
-        } ${
-          isHovered && isUnlocked && shouldAnimate
-            ? 'shadow-xl shadow-cyan-400/50 brightness-110'
-            : ''
-        }`}
-      >
-        {badge?.iconUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={badge.iconUrl}
-            alt={badge.name}
-            className={`w-10 h-10 transition-all duration-300 ${
-              !isUnlocked
-                ? 'grayscale opacity-40 brightness-75'
-                : isHovered && shouldAnimate
-                ? 'brightness-110 drop-shadow-lg'
-                : 'brightness-100'
-            }`}
-          />
-        ) : (
-          <div
-            className={`text-2xl transition-all duration-300 ${
-              isUnlocked
-                ? isHovered && shouldAnimate
-                  ? 'text-white drop-shadow-lg scale-110'
-                  : 'text-white'
-                : 'text-gray-500 opacity-60'
-            }`}
-          >
-            {isUnlocked ? '🏆' : <Lock size={24} />}
-          </div>
-        )}
-      </div>
+      <BadgePic
+        className="mb-3"
+        badge={badge}
+        isUnlocked={isUnlocked}
+        isHovered={isHovered}
+        shouldAnimate={shouldAnimate}
+      />
 
       {/* Badge Name with enhanced styling */}
       <h3
@@ -190,23 +169,12 @@ export default function Badge({
       </h3>
 
       {/* Badge Rarity Indicator with enhanced styling */}
-      {badge?.rarity && (
-        <div
-          className={`text-xs px-2 py-1 rounded-full transition-all duration-300 ${
-            isUnlocked
-              ? badge.rarity === 'legendary'
-                ? 'bg-yellow-500/30 text-yellow-300 shadow-sm shadow-yellow-400/20'
-                : badge.rarity === 'epic'
-                ? 'bg-purple-500/30 text-purple-300 shadow-sm shadow-purple-400/20'
-                : badge.rarity === 'rare'
-                ? 'bg-blue-500/30 text-blue-300 shadow-sm shadow-blue-400/20'
-                : 'bg-gray-500/30 text-gray-300 shadow-sm shadow-gray-400/20'
-              : 'bg-gray-700/20 text-gray-600 opacity-50'
-          } ${isHovered && isUnlocked && shouldAnimate ? 'brightness-125 shadow-md' : ''}`}
-        >
-          {badge.rarity}
-        </div>
-      )}
+      <BadgeRarity
+        badge={badge}
+        isUnlocked={isUnlocked}
+        isHovered={isHovered}
+        shouldAnimate={shouldAnimate}
+      />
 
       {/* Enhanced Unlock Glow Effect */}
       {isUnlocked && (

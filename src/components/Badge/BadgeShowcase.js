@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Trophy, Filter, Grid, List, Search } from 'lucide-react';
+import { Filter, Grid, List, Search, Trophy } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 import Badge from './Badge';
 import BadgeReactTooltip from './BadgeReactTooltip';
 
@@ -55,8 +55,9 @@ export default function BadgeShowcase({
           }
         >
           {allBadges.map((badge) => {
-            const isUnlocked = userBadges[badge.badgeId]?.unlocked;
             const userBadge = userBadges[badge.badgeId];
+            const isUnlocked = userBadge?.unlocked;
+            const unlockedAt = userBadge?.unlockedAt;
             const isNewlyUnlocked = isUnlocked && !userBadge?.isViewed;
             const progress =
               !isUnlocked && userBadge?.progress != null
@@ -71,6 +72,7 @@ export default function BadgeShowcase({
               <BadgeWrapper
                 key={badge.badgeId}
                 badge={badge}
+                unlockedAt={unlockedAt}
                 isUnlocked={isUnlocked}
                 isNewlyUnlocked={isNewlyUnlocked}
                 progress={progress}
@@ -91,6 +93,7 @@ export default function BadgeShowcase({
 // Wrapper component to handle individual badge rendering
 function BadgeWrapper({
   badge,
+  unlockedAt,
   isUnlocked,
   isNewlyUnlocked,
   progress,
@@ -105,6 +108,7 @@ function BadgeWrapper({
         <div className="flex-shrink-0">
           <Badge
             badge={badge}
+            unlockedAt={unlockedAt}
             isUnlocked={isUnlocked}
             isNewlyUnlocked={isNewlyUnlocked}
             progress={progress}
@@ -133,6 +137,7 @@ function BadgeWrapper({
   return (
     <Badge
       badge={badge}
+      unlockedAt={unlockedAt}
       isUnlocked={isUnlocked}
       isNewlyUnlocked={isNewlyUnlocked}
       progress={progress}

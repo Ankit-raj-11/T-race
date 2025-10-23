@@ -1,6 +1,8 @@
+// pages/api/users/create-or-update.js
+
+import { saveSession } from '../../../firebase-admin';
 import dbConnect from '../../../lib/db';
 import User from '../../../models/User';
-import { saveSession } from '../../../firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -9,15 +11,13 @@ export default async function handler(req, res) {
 
   const { idToken } = req.body;
   if (!idToken) {
-    return res.status(400).json({
-      message: 'Missing required fields: idToken'
-    });
+    return res.status(400).json({ message: 'Missing required fields: idToken' });
   }
 
-  const payload = await saveSession(req, res, idToken);
-  const { userId, displayName, photoURL, email } = payload;
-
   try {
+    const payload = await saveSession(req, res, idToken);
+    const { userId, displayName, photoURL, email } = payload;
+
     await dbConnect();
 
     // Check if user already exists
@@ -29,51 +29,17 @@ export default async function handler(req, res) {
       user.displayName = displayName;
       user.photoURL = photoURL;
       await user.save();
-
-      return res.status(200).json({
-        message: 'User updated successfully',
-        user: {
-          userId: user.userId,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          gameName: user.gameName,
-          highestScore: user.highestScore,
-          totalGamesPlayed: user.totalGamesPlayed,
-          lastLogin: user.lastLogin
-        }
-      });
+      return res.status(200).json({ message: 'User updated successfully', user });
     } else {
       // Create new user
-      user = new User({
-        userId,
-        email,
-        displayName,
-        photoURL,
-        lastLogin: Date.now()
-      });
-
+      user = new User({ userId, email, displayName, photoURL, lastLogin: Date.now() });
       await user.save();
-
-      return res.status(201).json({
-        message: 'User created successfully',
-        user: {
-          userId: user.userId,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          gameName: user.gameName,
-          highestScore: user.highestScore,
-          totalGamesPlayed: user.totalGamesPlayed,
-          lastLogin: user.lastLogin
-        }
-      });
+      return res.status(201).json({ message: 'User created successfully', user });
     }
   } catch (error) {
-    console.error('Error in create-or-update user:', error);
-    return res.status(500).json({
-      message: 'Internal server error',
-      error: error.message
-    });
+    // UPDATED: Added more detailed logging
+    console.error('Error in create-or-update user:', error.message);
+    console.error('Full error object:', error); // This will give us more details
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 }

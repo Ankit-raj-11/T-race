@@ -1,10 +1,10 @@
+import { Lock, Target, Trophy, Unlock } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
-import { Lock, Target, Trophy } from 'lucide-react';
 
 /**
- * ReactTooltip component for badge tooltips
- * Provides accessible tooltips for locked badges with custom styling
+ * ReactTooltip component for badge tooltips Provides accessible tooltips for locked badges with
+ * custom styling
  */
 export default function BadgeReactTooltip() {
   // Handle escape key to close tooltip and return focus to trigger element
@@ -80,6 +80,12 @@ export default function BadgeReactTooltip() {
 
     if (!badge) return null;
 
+    /** Certain types of badges can track on going progress */
+    const canShowProgress =
+      badge.criteria.type === 'games_played' ||
+      badge.criteria.type === 'streak' ||
+      badge.criteria.type === 'time_played';
+
     let rarityColor;
     switch (badge.rarity) {
       case 'legendary':
@@ -123,7 +129,7 @@ export default function BadgeReactTooltip() {
             </div>
             <p className="text-gray-300 text-xs pl-5">{formatCriteria(badge.criteria)}</p>
             {/* Progress */}
-            {badge.progress != null && (
+            {canShowProgress && badge.progress != null && (
               <div className="text-gray-300 text-xs pl-5">{formatProgress(badge.progress)}</div>
             )}
           </div>
@@ -135,6 +141,16 @@ export default function BadgeReactTooltip() {
             <Trophy className={`${rarityColor}`} size={14} aria-hidden="true" />
             <span className="text-xs text-gray-400">Rarity:</span>
             <span className={`text-xs font-medium capitalize ${rarityColor}`}>{badge.rarity}</span>
+          </div>
+        )}
+
+        {/* Unlocked at */}
+        {!!badge.isUnlocked && badge.unlockedAt && (
+          <div className="flex items-center gap-2 text-gray-500 mt-3 pt-2 border-t border-gray-700">
+            <Unlock size={14} aria-hidden="true" />
+            <span className="text-xs font-medium">
+              {new Date(badge.unlockedAt).toLocaleString()}
+            </span>
           </div>
         )}
 
@@ -155,16 +171,15 @@ export default function BadgeReactTooltip() {
       clickable={false}
       noArrow={false}
       render={renderTooltipContent}
+      border="1px solid #4b5563" // border-gray-600
       style={{
         backgroundColor: '#1f2937', // bg-gray-800
-        border: '1px solid #4b5563', // border-gray-600
         borderRadius: '0.5rem', // rounded-lg
         padding: '1rem', // p-4
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', // shadow-xl
         zIndex: 50,
         maxWidth: '20rem' // max-w-xs
       }}
-      className="badge-tooltip"
       role="tooltip"
       aria-live="polite"
       aria-atomic="true"

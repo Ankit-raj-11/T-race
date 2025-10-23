@@ -1,43 +1,26 @@
 'server-only';
-import * as admin from 'firebase-admin';
 import * as cookie from 'cookie';
+import admin from 'firebase-admin';
 
 /**
- * To authenticate a service account and authorize it to access Firebase services,
- * you must generate a private key file in JSON format.
- *
- * To generate a private key file for your service account:
- *
- * 1. In the Firebase console, open Settings > Service Accounts.
- * 2. Click Generate New Private Key, then confirm by clicking Generate Key.
- * 3. Securely store the JSON file containing the key.
- *
- * Use the values inside the JSON file to set FIREBASE_ in .env
+ * Your service account credentials should be stored in environment variables without the
+ * NEXT_PUBLIC_ prefix for server-side code.
  */
 const firebaseAdminConfig = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  // CORRECTED: Removed NEXT_PUBLIC_ prefix
+  projectId: process.env.FIREBASE_PROJECT_ID,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY
+  // CORRECTED: Replaces escaped newlines in the private key
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
 };
 
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-        // Handle newlines in the private key string
-        privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n')
-      })
-    });
-  } catch (error) {
-    console.error('Firebase admin initialization error:', error);
-  }
+  admin.initializeApp({
+    credential: admin.credential.cert(firebaseAdminConfig)
+  });
 }
 
-/**
- * Expose subset of properties within the decoded idToken
- */
+/** Expose subset of properties within the decoded idToken */
 function getIdTokenPayload(payload) {
   return {
     userId: payload.user_id,
@@ -51,14 +34,14 @@ function getIdTokenPayload(payload) {
 const SESSION_TOKEN_NAME = 't-race-session_token';
 
 /**
- * Verify the idToken, save it into a session cookie
- * and return the payload for the currently active session
+ * Verify the idToken, save it into a session cookie and return the payload for the currently active
+ * session
  */
 export async function saveSession(req, res, idToken) {
   const payload = await admin.auth().verifyIdToken(idToken);
 
-  // Set session expiration to 5 days (in seconds).
-  const maxAge = 60 * 60 * 24 * 5;
+  // Set session expiration to 1 days (in seconds).
+  const maxAge = 60 * 60 * 24 * 1;
   const sessionCookie = await admin.auth().createSessionCookie(idToken, {
     // createSessionCookie expects expiresIn to be specified in ms
     expiresIn: maxAge * 1000
@@ -80,9 +63,7 @@ export async function saveSession(req, res, idToken) {
   return getIdTokenPayload(payload);
 }
 
-/**
- * Remove the session cookie
- */
+/** Remove the session cookie */
 export async function clearSession(req, res) {
   res.setHeader(
     'Set-Cookie',
@@ -99,8 +80,8 @@ export async function clearSession(req, res) {
 }
 
 /**
- * Retrieve session token from cookie, and verify it (refresh if
- * necessary) and return the payload for the currently active session
+ * Retrieve session token from cookie, and verify it (refresh if necessary) and return the payload
+ * for the currently active session
  */
 export async function getSession(req, res) {
   const rawCookies = req.headers.cookie;
@@ -111,7 +92,7 @@ export async function getSession(req, res) {
   const sessionCookie = parsedCookie[SESSION_TOKEN_NAME];
   const payload = await admin.auth().verifySessionCookie(
     sessionCookie,
-    /** checkRevoked */
+    /** CheckRevoked */
     true
   );
   return getIdTokenPayload(payload);

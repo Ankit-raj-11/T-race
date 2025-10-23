@@ -1,5 +1,5 @@
-import BadgeCollection from '../components/Badge/BadgeCollection';
-import StreakBanner from '../components/StreakBanner';
+import BadgeCollection from '@/components/Badge/BadgeCollection';
+import StreakBanner from '@/components/StreakBanner';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 

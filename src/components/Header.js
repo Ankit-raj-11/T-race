@@ -1,9 +1,9 @@
-import React from 'react';
+import { LogOut, Menu, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Menu, X, LogOut } from 'lucide-react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import Image from 'next/image';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -16,11 +16,9 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-2xl font-bold">
-              T-race
+              <Image src='/logo.png' alt='logo' width={70} height={60}/> 
             </span>
-          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
@@ -67,19 +65,24 @@ export default function Header() {
               </>
             )}
             {!loading && user && (
-              <>
-                <Image
-                  src={
-                    user.photoURL ||
-                    'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
-                  }
-                  alt={user.displayName || 'User'}
-                  width={40}
-                  height={40}
-                  className="rounded-full border-3 border-cyan-500 object-cover mr-2"
-                  referrerPolicy="no-referrer"
-                  unoptimized={true} // Use unoptimized for external URLs like ShutterStock or user photos if Next config is complicated
-                />
+              <div className="flex items-center gap-4">
+                {' '}
+                {/* Added a div wrapper for better spacing */}
+                {/* MODIFIED: Wrapped Image with Link to profile */}
+                <Link href="/profile" className="cursor-pointer">
+                  <Image
+                    src={
+                      user.photoURL ||
+                      'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
+                    }
+                    alt={user.displayName || 'User'}
+                    width={40}
+                    height={40}
+                    className="rounded-full border-2 border-cyan-500 object-cover"
+                    referrerPolicy="no-referrer"
+                    unoptimized={true}
+                  />
+                </Link>
                 <button
                   onClick={logout}
                   className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400"
@@ -87,7 +90,7 @@ export default function Header() {
                   <span className="hidden sm:inline">Logout </span>
                   <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
                 </button>
-              </>
+              </div>
             )}
           </nav>
 
@@ -156,31 +159,40 @@ export default function Header() {
                   >
                     Signup
                   </button>
-                  {/* The commented Login button is left as is */}
                 </>
               )}
               {!loading && user && (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={
-                      user.photoURL ||
-                      'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
-                    }
-                    alt={user.displayName || 'User'}
-                    width={40}
-                    height={40}
-                    className="rounded-full border-3 border-cyan-500 object-cover mr-2"
-                    referrerPolicy="no-referrer"
-                  />
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    {/* MODIFIED: Wrapped Image with Link to profile */}
+                    <Link
+                      href="/profile"
+                      className="cursor-pointer"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Image
+                        src={
+                          user.photoURL ||
+                          'https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg'
+                        }
+                        alt={user.displayName || 'User'}
+                        width={40}
+                        height={40}
+                        className="rounded-full border-2 border-cyan-500 object-cover"
+                        referrerPolicy="no-referrer"
+                        unoptimized={true}
+                      />
+                    </Link>
+                    <span className="font-medium text-white">{user.displayName}</span>
+                  </div>
                   <button
                     onClick={() => {
                       setIsMenuOpen(false);
                       logout();
                     }}
-                    className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400 w-full"
+                    className="bg-transparent border border-white/10 text-white/90 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:bg-red-600/10 hover:text-red-400"
                   >
-                    <span className="hidden sm:inline">Logout </span>
-                    <LogOut className="ml-2 w-4 h-4 inline-block sm:ml-0 sm:pl-0" />
+                    <LogOut className="w-5 h-5" />
                   </button>
                 </div>
               )}

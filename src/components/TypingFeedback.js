@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, Target, Zap, Award } from 'lucide-react';
+import { Award, Target, TrendingUp, Zap } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function TypingFeedback({ text, userInput, startTime, isActive, mode, targetWpm }) {
   const [stats, setStats] = useState({
@@ -131,8 +131,8 @@ export default function TypingFeedback({ text, userInput, startTime, isActive, m
               stats.accuracy >= 95
                 ? 'text-green-400'
                 : stats.accuracy >= 85
-                ? 'text-yellow-400'
-                : 'text-red-400'
+                  ? 'text-yellow-400'
+                  : 'text-red-400'
             }`}
           >
             {stats.accuracy}%

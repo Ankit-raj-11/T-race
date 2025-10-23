@@ -1,24 +1,11 @@
+import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
+import { Filter, Grid, List, Search, Trophy } from 'lucide-react';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import BadgeShowcase from './BadgeShowcase';
-import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
-import { Trophy, Filter, Grid, List, Search } from 'lucide-react';
 
 // Sample user badges progress
 const sampleUserBadges = {
-  ['lightning_fingers_80']: {
-    unlocked: false,
-    progress: 75,
-    currentValue: 20,
-    targetValue: 80,
-    unlockedAt: '2025-10-10T14:06:04.340Z',
-    isViewed: false
-  },
-  ['accuracy_expert_95']: {
-    unlocked: true,
-    progress: 100,
-    unlockedAt: '2025-10-10T14:06:04.340Z',
-    isViewed: false
-  },
   ['first_steps']: {
     unlocked: true,
     progress: 100,
@@ -30,13 +17,6 @@ const sampleUserBadges = {
     progress: 20,
     currentValue: 20,
     targetValue: 100,
-    isViewed: false
-  },
-  ['aim_high']: {
-    unlocked: false,
-    progress: 40,
-    currentValue: 4,
-    targetValue: 10,
     isViewed: false
   }
 };
@@ -68,7 +48,7 @@ export default function BadgeDemo() {
     console.log('Badge clicked:', badge);
   };
 
-  const handleBadgeAnimationComplete = (badge) => {
+  const handleBadgeAnimationComplete = (animationName, badge) => {
     console.log('Animation completed for badge:', badge.name);
     // Update the badge to mark it as viewed
     setUserBadges((prev) => ({
@@ -140,23 +120,24 @@ export default function BadgeDemo() {
             <h3 className="text-lg font-medium text-white mb-3">Test Celebration Animations</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {BADGE_COLLECTION.map((badge) => (
-                <button
+                <Link
                   key={badge.badgeId}
+                  href={`#${badge.badgeId}`}
                   onClick={() => simulateUnlock(badge.badgeId)}
                   className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                     badge.rarity === 'legendary'
                       ? 'bg-yellow-600 hover:bg-yellow-500 text-white'
                       : badge.rarity === 'epic'
-                      ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                      : badge.rarity === 'rare'
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-gray-600 hover:bg-gray-500 text-white'
+                        ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                        : badge.rarity === 'rare'
+                          ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                          : 'bg-gray-600 hover:bg-gray-500 text-white'
                   }`}
                 >
                   Unlock {badge.name}
                   <br />
                   <span className="text-xs opacity-75">({badge.rarity})</span>
-                </button>
+                </Link>
               ))}
             </div>
             <button
