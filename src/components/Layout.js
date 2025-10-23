@@ -1,6 +1,10 @@
 import React from 'react';
 import Footer from './Footer';
 import Header from './Header';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
+SpeedInsights();
+
 
 export default function Layout({ children }) {
   return (
