@@ -1,5 +1,5 @@
 'server-only';
-import admin from 'firebase-admin';
+import * as admin from 'firebase-admin';
 import * as cookie from 'cookie';
 
 /**
@@ -21,10 +21,18 @@ const firebaseAdminConfig = {
 };
 
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(firebaseAdminConfig)
-    // databaseURL
-  });
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+        // Handle newlines in the private key string
+        privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      })
+    });
+  } catch (error) {
+    console.error('Firebase admin initialization error:', error);
+  }
 }
 
 /**

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Award, Lock } from 'lucide-react';
 import { BADGE_COLLECTION } from '@/lib/badge/badgeCollection';
 import BadgeShowcase from './BadgeShowcase';
 
