@@ -20,9 +20,9 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-20">
-          <div className="text-center max-w-4xl mx-auto" >
-            <div  style={{display:'flex', justifyContent:'center', paddingBottom:'10px' }}> 
-                <Image src='/logo.png' alt='T-race' width={300} height={200}/>
+          <div className="text-center max-w-4xl mx-auto">
+            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: '10px' }}>
+              <Image src="/logo.png" alt="T-race" width={300} height={200} />
             </div>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
               Challenge yourself in the ultimate typing speed competition. Race against time and

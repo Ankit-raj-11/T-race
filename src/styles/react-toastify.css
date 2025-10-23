@@ -2,7 +2,7 @@
 
 /** React Toastify Custom Styles */
 .Toastify__toast {
-  @apply rounded-lg bg-gray-800 text-gray-50 ;
+  @apply rounded-lg bg-gray-800 text-gray-50;
   @apply ring-gray-700 ring-1;
 }
 

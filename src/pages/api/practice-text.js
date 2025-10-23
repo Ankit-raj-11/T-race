@@ -176,7 +176,6 @@ function getRandomFromArray(array) {
 export default function handler(req, res) {
   if (req.method === 'GET') {
     const { source, difficulty, customText } = req.query;
-
     let text = '';
 
     if (customText) {
