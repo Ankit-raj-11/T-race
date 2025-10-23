@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2">
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-2xl font-bold">
-                <Image src='/logo2.png' alt='T-race' width={80} height={60} />
+                <Image src="/logo2.png" alt="T-race" width={80} height={60} />
               </span>
             </Link>
             <p className="text-sm">

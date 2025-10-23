@@ -47,8 +47,8 @@ Ready to contribute? Here's how to set up the project on your local machine.
 
 A great way to start is by tackling an existing issue. We keep a list of open issues that need attention.
 
--   **All Issues**: You can find the full list of open issues [here](https://github.com/your-org/t-race/issues).
--   **Good First Issues**: For new contributors, we've curated a list of issues that are easier to start with. Look for issues with the [**`good first issue`**](https://github.com/your-org/t-race/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label.
+- **All Issues**: You can find the full list of open issues [here](https://github.com/your-org/t-race/issues).
+- **Good First Issues**: For new contributors, we've curated a list of issues that are easier to start with. Look for issues with the [**`good first issue`**](https://github.com/your-org/t-race/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) label.
 
 If you have an idea for a new feature or find a bug that isn't documented, feel free to open a new issue!
 
@@ -63,6 +63,7 @@ Once you've made your changes, it's time to submit them for review.
     ```bash
     git checkout -b your-branch-name
     ```
+
     (e.g., `git checkout -b feat/add-user-profile` or `git checkout -b fix/login-bug`)
 
 2.  **Make Your Changes**
@@ -89,10 +90,10 @@ Once you've made your changes, it's time to submit them for review.
 5.  **Open a Pull Request (PR)**
 
     Go to the T-Race repository on GitHub. You should see a prompt to create a Pull Request from your recently pushed branch.
-    -   Use a clear and descriptive title.
-    -   In the PR description, reference the issue you are solving. For example, add `Closes #23` if your PR closes issue number 23. This will automatically link the PR to the issue.
-    -   Ensure that any automated tests (if implemented) are passing locally before you submit.
-    -   Be patient. A project maintainer will review your PR, provide feedback, and merge it if everything looks good.
+    - Use a clear and descriptive title.
+    - In the PR description, reference the issue you are solving. For example, add `Closes #23` if your PR closes issue number 23. This will automatically link the PR to the issue.
+    - Ensure that any automated tests (if implemented) are passing locally before you submit.
+    - Be patient. A project maintainer will review your PR, provide feedback, and merge it if everything looks good.
 
 ## Commit Message Format
 
@@ -101,13 +102,13 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0
 Your commit message should be structured as follows:
 **Common Types:**
 
--   **feat**: A new feature.
--   **fix**: A bug fix.
--   **docs**: Documentation only changes.
--   **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc).
--   **refactor**: A code change that neither fixes a bug nor adds a feature.
--   **test**: Adding missing tests or correcting existing tests.
--   **chore**: Changes to the build process or auxiliary tools and libraries.
+- **feat**: A new feature.
+- **fix**: A bug fix.
+- **docs**: Documentation only changes.
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc).
+- **refactor**: A code change that neither fixes a bug nor adds a feature.
+- **test**: Adding missing tests or correcting existing tests.
+- **chore**: Changes to the build process or auxiliary tools and libraries.
 
 **Examples:**
 feat: Add results modal after a test is completed

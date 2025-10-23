@@ -216,7 +216,7 @@ export default function Race() {
             <ArrowLeft size={20} />
             <span>Back to Home</span>
           </Link>
-          
+
           <div className="flex items-center gap-3">
             {/* Difficulty Selector */}
             <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ export default function Race() {
                 <option value="hard">Hard</option>
               </select>
             </div>
-            
+
             <button
               onClick={handleNextRound}
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors cursor-pointer"
@@ -249,7 +249,7 @@ export default function Race() {
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
             Typing Race
           </h1>
-          
+
           {/* Difficulty Info */}
           {sentenceInfo && (
             <div className="mb-4 text-sm text-gray-400">
@@ -263,7 +263,7 @@ export default function Race() {
               )}
             </div>
           )}
-          
+
           {/* Timer below title */}
           <Timer
             key={timerKey}
@@ -326,7 +326,10 @@ export default function Race() {
             <h4 className="text-lg font-medium mb-2 text-cyan-400">Instructions:</h4>
             <ul className="text-gray-300 space-y-1">
               <li>• Type the sentence exactly as shown above</li>
-              <li>• Choose your difficulty level: Easy (common words), Medium (intermediate), or Hard (advanced)</li>
+              <li>
+                • Choose your difficulty level: Easy (common words), Medium (intermediate), or Hard
+                (advanced)
+              </li>
               <li>• Click &quot;New Sentence&quot; to practice with different text</li>
               <li>• Each difficulty level offers thousands of unique words for endless practice</li>
               <li>• Focus on accuracy and speed to improve your typing skills</li>
