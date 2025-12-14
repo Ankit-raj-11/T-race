@@ -99,7 +99,9 @@ class BadgeService {
           throw new Error(`Unknown criteria type: ${criteria.type}`);
       }
     } catch (error) {
-      console.error(`Error evaluating criteria for badge ${badge.badgeId}:`, error);
+      // FIX: Changed string concatenation to use a format specifier for console.error
+      // This prevents potential log forging if badge.badgeId could contain format specifiers.
+      console.error('Error evaluating criteria for badge %s:', badge.badgeId, error);
       return {
         unlocked: false,
         progress: 0,
@@ -366,7 +368,7 @@ class BadgeService {
    *
    * @param {string} userId - User ID
    * @param {string[]} badgeIds - Array of badge IDs to mark as viewed
-   * @returns {Promise<void>}
+   * @returns {Promise<void>} 
    */
   async markBadgesAsViewed(userId, badgeIds) {
     try {
