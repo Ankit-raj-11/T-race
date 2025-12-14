@@ -99,7 +99,8 @@ class BadgeService {
           throw new Error(`Unknown criteria type: ${criteria.type}`);
       }
     } catch (error) {
-      console.error(`Error evaluating criteria for badge ${badge.badgeId}:`, error);
+      // Fix: Changed template literal to multiple arguments to prevent format string vulnerability
+      console.error('Error evaluating criteria for badge', badge.badgeId, error);
       return {
         unlocked: false,
         progress: 0,
