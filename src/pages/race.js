@@ -311,6 +311,7 @@ export default function Race() {
               <input
                 ref={inputRef}
                 type="text"
+                onPaste={(e) => e.preventDefault()}
                 value={userInput}
                 onChange={handleInputChange}
                 placeholder="Start typing the sentence above..."
