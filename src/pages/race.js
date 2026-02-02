@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ArrowLeft, RotateCcw, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 export default function Race() {
   const { user, saveTypingStat } = useAuth();
@@ -27,18 +27,13 @@ export default function Race() {
   const [showSettings, setShowSettings] = useState(false);
   const [sentenceInfo, setSentenceInfo] = useState(null);
 
-  // Fetch random sentence on component mount and when difficulty changes
-  useEffect(() => {
-    fetchNewSentence();
-  }, [difficulty]);
-
   useEffect(() => {
     if (!loading && inputRef.current) {
       inputRef.current.focus();
     }
   }, [loading, raceStatus]); // Focus input when a new race starts
 
-  const fetchNewSentence = async () => {
+  const fetchNewSentence = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/sentences?difficulty=${difficulty}&type=mixed`);
@@ -52,7 +47,12 @@ export default function Race() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [difficulty]);
+
+  // Fetch random sentence on component mount and when difficulty changes
+  useEffect(() => {
+    fetchNewSentence();
+  }, [fetchNewSentence]);
 
   const endRace = async () => {
     setTimerActive(false);

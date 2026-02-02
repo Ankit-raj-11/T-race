@@ -1,5 +1,6 @@
 import styles from './about.module.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function About() {
   return (
@@ -11,7 +12,15 @@ export default function About() {
         </div>
         <div className={styles['hero-illustration']}>
           {/* Placeholder for the complex glowing keyboard illustration */}
-          <img src="/hero-keyboard.png" alt="neon keyboard" className={styles.keyboardImg} />
+          <Image
+            src="/hero-keyboard.png"
+            alt="neon keyboard"
+            className={styles.keyboardImg}
+            width={540}
+            height={300}
+            style={{ height: 'auto' }}
+            priority
+          />
         </div>
       </div>
 
